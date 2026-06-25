@@ -52,6 +52,34 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   `/chat` nutzt den echten Agent-Loop gegen das konfigurierte Modell; Sessions persistieren;
   Sidebar mit Konversationsliste. **🚩 Checkpoint + QA-Gate** danach, dann M2 ff.
 
+## Sidebar-Zielbild & Startseite (aus dem Mockup)
+
+Das Dashboard-Mockup (`docs/mockups/lokyy-dashboard-*.png`) zeigt die Vollausbau-Vision.
+Die in F2 gebaute Shell ist bewusst die **Grundstruktur**; sie wächst **inkrementell mit
+den Features** — jeder Sidebar-Punkt wird aktiviert, wenn sein Feature existiert (keine
+Dead-Links, daher aktuell „bald"-Markierung).
+
+**Sidebar-Punkte (Mockup) → Feature/Task, der sie aktiviert:**
+
+| Sidebar-Punkt   | Status F2        | Aktiviert durch        |
+|-----------------|------------------|------------------------|
+| Dashboard       | „bald"           | Startseite-Task (s. u.)|
+| Chats           | ✅ aktiv          | F1/F2                  |
+| Projekte        | _noch nicht_     | M3 (Projekte/Editor)   |
+| Workflows       | _noch nicht_     | M4 (Workflows/Multi-Agent) |
+| Dateien         | _noch nicht_     | M3                     |
+| Skills          | _noch nicht_     | M4                     |
+| Team            | _noch nicht_     | M7 (Sync/Team)         |
+| Einstellungen   | „bald"           | **F3** (Settings-Framework) |
+
+**Startseite:** Aktuell ist die öffentliche `app/page.tsx` die Marketing-Landing
+(für Nicht-Eingeloggte), nach Login wird auf `/chat` geleitet. Im Mockup ist die
+Startseite nach Login das **Dashboard** („Guten Morgen, …", Stat-Karten, Quick-Actions,
+Übersicht über Workflows/Projekte/Lernen). Das Dashboard zeigt Daten aus mehreren noch
+nicht gebauten Features — daher als **eigener Folge-Task** vorgesehen (Grundgerüst mit
+Platzhaltern früh möglich, echte Daten sobald die Features existieren). _Noch nicht in
+Plane angelegt — Freigabe ausstehend._
+
 ## Notizen
 
 - **Lokale DB:** Dev läuft jetzt (seit F1.1) gegen eine **dedizierte Docker-Dev-Postgres**
