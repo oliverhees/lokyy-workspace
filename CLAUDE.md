@@ -67,6 +67,18 @@ GET/POST /api/v1/workspaces/codelabs/projects/{project_id}/modules/
 
 ---
 
+### Plane voll ausschöpfen (volle Power nutzen)
+
+Plane ist unser PM-Tool — wir nutzen die **volle Bandbreite**, nicht nur Tasks. Immer über die `mcp__plane__*`-Tools:
+
+- **Work Items** = Tasks · **Modules** = Meilensteine.
+- **Pages** = Projekt-Wiki / Entscheidungs-Log / Status (PM-nahe Doku in Plane; Produkt-Doku bleibt Starlight, Spezifikation in `docs/`). *Hinweis: Pages aktuell NICHT über API/MCP erreichbar (404) — bei Bedarf manuell in der Plane-UI anlegen.*
+- **Labels** = Kategorisierung (`backend`, `frontend`, `infra`, `docs`, `security`, `agent`, `sync` …).
+- **Priority** + **Relations/Dependencies** = Reihenfolge & Abhängigkeiten sichtbar machen.
+- **Cycles** = Sprints (optional). **Worklogs** = Zeiterfassung. **Comments** = Findings/Entscheidungen je Task (Pflicht).
+
+---
+
 ## 2. Arbeitsweise (Workflow je Aufgabe)
 
 1. **Task anlegen** in Plane (LWS) — klare Zielbeschreibung.
@@ -127,3 +139,16 @@ alle Agenten brachen mit 0 Output ab. Daraus die Regeln:
 - **Workflows & Skill-Verkettung** (Schritt-Ketten, zeitgesteuert, vollautomatisch, mit Ergebnis-Artefakten + Notifications).
 - **Lokal ↔ Server-Umschaltung + Synchronisation** (Workspace-Sync, Offline/PWA, geteilte Mitarbeiter-Workspaces) — das komplexeste Teilprojekt.
 - **Lizenzmodell:** eigene freie Lizenz (nicht AGPL) — final festlegen.
+
+---
+
+## 6. Engineering-Standards
+
+- **Pydantic v2 voll ausschöpfen:** `pydantic-settings` für Config (`.env` → typisierte Settings,
+  kein rohes `os.getenv`); **SQLModel** (Pydantic+SQLAlchemy) für DB-Modelle; Pydantic-Schemas für
+  ALLE API-Requests/Responses; **strikte Validierung** (Input-Hygiene = Sicherheit/DSGVO);
+  `field_validator`/`model_validator` & `computed_field` wo sinnvoll; Pydantic für **strukturierte
+  LLM-Outputs** (Tool-Calls/Agent-Antworten validieren statt roh parsen).
+- **bun/bunx** im Frontend (kein npm/npx), **TypeScript** durchgängig.
+- **Test-driven** wo sinnvoll (RED→GREEN), grüner Build vor jedem Commit.
+- **Doku (Starlight) zu jedem Task** — siehe Direktive 8.

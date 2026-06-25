@@ -1,0 +1,41 @@
+# Lokyy Workspace — local/server container stack (M0/T0.2)
+# Same image set runs locally and on a server (image parity).
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lokyy}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lokyy}
+      POSTGRES_DB: ${POSTGRES_DB:-lokyy}
+    # No host port mapping by default — the DB is only reachable inside the
+    # compose network (security: internal services stay internal). For local
+    # access use `docker compose exec db psql -U lokyy`, or uncomment below
+    # and pick a free host port:
+    # ports:
+    #   - "127.0.0.1:${DB_PORT:-5433}:5432"
+    volumes:
+      - lokyy-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lokyy} -d ${POSTGRES_DB:-lokyy}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-lokyy}:${POSTGRES_PASSWORD:-lokyy}@db:5432/${POSTGRES_DB:-lokyy}
+      SECRET_KEY: ${SECRET_KEY:-change_me_generate_a_random_value}
+    ports:
+      # Default 8008 to avoid clashing with other local services.
+      - "127.0.0.1:${APP_PORT:-8008}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  lokyy-db:

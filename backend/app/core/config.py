@@ -1,0 +1,43 @@
+"""Application configuration — typed via pydantic-settings (no raw os.getenv).
+
+All runtime config is validated here at startup. Add new settings as typed
+fields; invalid values fail fast with a clear Pydantic error.
+"""
+from functools import lru_cache
+
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=(".env", "../.env"),
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+    )
+
+    # App
+    app_env: str = Field(default="development")
+    app_bind: str = Field(default="127.0.0.1")
+    app_port: int = Field(default=8000, ge=1, le=65535)
+
+    # Database (PostgreSQL + pgvector) — used from T0.3 onward
+    database_url: str = Field(
+        default="postgresql+psycopg://lokyy:lokyy@localhost:5432/lokyy"
+    )
+
+    # Auth & security
+    auth_enabled: bool = Field(default=True)
+    secret_key: str = Field(default="change_me_generate_a_random_value")
+    secure_cookies: bool = Field(default=False)
+
+    @property
+    def is_production(self) -> bool:
+        return self.app_env.lower() in {"production", "prod"}
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Cached singleton so settings are parsed/validated exactly once."""
+    return Settings()
