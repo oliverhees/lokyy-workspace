@@ -17,6 +17,7 @@ import {
   setDefaultModel,
   updateModel,
 } from "@/lib/models";
+import { PROVIDER_PRESETS, presetFor } from "@/lib/providers";
 
 const fieldClass =
   "w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30 dark:border-slate-700 dark:bg-slate-900";
@@ -52,9 +53,23 @@ export function ModelsTab() {
   }, []);
 
   function startNew() {
-    setForm(emptyForm);
+    // default to the first preset (OpenRouter) so the base URL is prefilled
+    const p = PROVIDER_PRESETS[0];
+    setForm({ ...emptyForm, provider: p.id, base_url: p.baseUrl });
     setEditing("new");
     setError(null);
+  }
+
+  function pickProvider(id: string) {
+    const p = presetFor(id);
+    // prefill base URL from the preset, but don't clobber a URL the user typed
+    setForm((f) => ({
+      ...f,
+      provider: (p?.id ?? id) as typeof f.provider,
+      base_url: p && (!f.base_url || PROVIDER_PRESETS.some((x) => x.baseUrl === f.base_url))
+        ? p.baseUrl
+        : f.base_url,
+    }));
   }
 
   function startEdit(ep: ModelEndpoint) {
@@ -104,13 +119,15 @@ export function ModelsTab() {
         <input className={fieldClass} placeholder={t("name")} value={form.name}
                onChange={(e) => setForm({ ...form, name: e.target.value })} />
         <select className={fieldClass} value={form.provider}
-                onChange={(e) => setForm({ ...form, provider: e.target.value as Provider })}>
-          <option value="openai">OpenAI-kompatibel (OpenAI, Ollama, vLLM, …)</option>
-          <option value="anthropic">Anthropic</option>
+                onChange={(e) => pickProvider(e.target.value)}>
+          {PROVIDER_PRESETS.map((p) => (
+            <option key={p.id} value={p.id}>{p.label}</option>
+          ))}
         </select>
         <input className={fieldClass} placeholder={t("baseUrl")} value={form.base_url}
                onChange={(e) => setForm({ ...form, base_url: e.target.value })} />
-        <input className={fieldClass} placeholder={t("model")} value={form.model}
+        <input className={fieldClass} placeholder={presetFor(form.provider)?.modelHint ?? t("model")}
+               value={form.model}
                onChange={(e) => setForm({ ...form, model: e.target.value })} />
         <input className={fieldClass} type="password" autoComplete="off"
                placeholder={editing === "new" ? t("apiKey") : t("apiKeyKeep")} value={form.api_key}
@@ -120,7 +137,7 @@ export function ModelsTab() {
 
         <div className="flex gap-2">
           <button type="button" onClick={save}
-                  disabled={busy || !form.name.trim() || !form.base_url.trim() || !form.model.trim()}
+                  disabled={busy || !form.name.trim() || !form.model.trim()}
                   className="grad rounded-lg px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-40">
             {t("save")}
           </button>

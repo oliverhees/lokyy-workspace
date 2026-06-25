@@ -3,7 +3,18 @@
 // on update leaves it unchanged.
 import { apiFetch } from "./api";
 
-export type Provider = "openai" | "anthropic";
+export type Provider =
+  | "openai"
+  | "anthropic"
+  | "openrouter"
+  | "groq"
+  | "mistral"
+  | "deepseek"
+  | "together_ai"
+  | "gemini"
+  | "ollama"
+  | "azure"
+  | "custom";
 
 export interface ModelEndpoint {
   id: string;
