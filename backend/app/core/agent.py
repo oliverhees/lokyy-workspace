@@ -67,6 +67,7 @@ async def run_agent(
     llm: LLMCaller,
     *,
     max_rounds: int = DEFAULT_MAX_ROUNDS,
+    is_admin: bool = False,
 ) -> AgentResult:
     convo = list(messages)
     tool_events: list[dict] = []
@@ -88,7 +89,7 @@ async def run_agent(
                     f"(stopped: repeated call to '{call.name}')",
                     round_index + 1, convo, "runaway", tool_events,
                 )
-            result = await registry.execute(call.name, call.args)
+            result = await registry.execute(call.name, call.args, is_admin=is_admin)
             tool_events.append({"name": call.name, "args": call.args, "ok": result.ok})
             convo.append({
                 "role": "tool",

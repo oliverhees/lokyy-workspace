@@ -22,6 +22,7 @@ class Tool:
     description: str
     parameters: dict  # JSON Schema for the args
     handler: Callable[[dict], Awaitable[ToolResult]]
+    requires_admin: bool = False  # privileged tools (shell, code, file write …)
 
 
 class ToolRegistry:
@@ -37,16 +38,29 @@ class ToolRegistry:
     def names(self) -> list[str]:
         return list(self._tools)
 
-    def schemas(self) -> list[dict]:
-        return [
-            {"name": t.name, "description": t.description, "parameters": t.parameters}
-            for t in self._tools.values()
-        ]
+    def _schema(self, t: Tool) -> dict:
+        return {
+            "name": t.name,
+            "description": t.description,
+            "parameters": t.parameters,
+            "requires_admin": t.requires_admin,
+        }
 
-    async def execute(self, name: str, args: dict) -> ToolResult:
+    def schemas(self) -> list[dict]:
+        return [self._schema(t) for t in self._tools.values()]
+
+    def schemas_for(self, *, is_admin: bool) -> list[dict]:
+        """Only the tools the caller may use — privileged tools are hidden from non-admins."""
+        return [self._schema(t) for t in self._tools.values() if is_admin or not t.requires_admin]
+
+    async def execute(self, name: str, args: dict, *, is_admin: bool = False) -> ToolResult:
         tool = self.get(name)
         if tool is None:
             return ToolResult(ok=False, content=f"unknown tool: {name}")
+        if tool.requires_admin and not is_admin:
+            # Security: never run a privileged tool for a non-admin (defense in depth —
+            # such tools are also hidden from the prompt via schemas_for()).
+            return ToolResult(ok=False, content=f"not authorized: '{name}' requires admin")
         try:
             return await tool.handler(args or {})
         except Exception as exc:  # tools must never crash the loop
