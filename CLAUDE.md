@@ -162,6 +162,10 @@ alle Agenten brachen mit 0 Output ab. Daraus die Regeln:
 - **bun/bunx** im Frontend (kein npm/npx), **TypeScript** durchgängig.
 - **Next.js immer auf der neuesten Stable-Version** halten (aktuell 16.x).
 - **Test-driven** wo sinnvoll (RED→GREEN), grüner Build vor jedem Commit.
+- **QA-Gate pro Meilenstein:** Vor jedem Meilenstein-Abschluss ein QA-Pass durch einen
+  dedizierten Q&A-/Review-Agenten (agent-skills `security-auditor`/`code-reviewer`/`test-engineer`):
+  Security (Auth/Scoping/Sandbox), End-to-End-Flow, Test-Coverage. Kein QA pro Task (Overhead) —
+  aber kein Meilenstein gilt ohne bestandenen QA-Pass als fertig.
 - **Mehr Commits in kleineren Schritten:** atomare Commits pro logischem Schritt (Modelle,
   Migration, Tests, Doku je eigener Commit), nicht ein Riesen-Commit pro Task. Aussagekräftige Messages.
 - **UI-Sichtprüfung vor „Done" (Pflicht, wo sinnvoll):** Jede UI-Funktion/Seite vor Abschluss
