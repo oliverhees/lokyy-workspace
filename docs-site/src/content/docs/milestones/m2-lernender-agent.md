@@ -29,5 +29,11 @@ Baut auf der Fundament-Phase (F) auf. Vertikale Slices, jeder für sich erlebbar
   gespeichert (M2.3 verfeinert das zu extrahierten Fakten). Memory bricht den Chat nie (gekapselt).
   **Verifiziert:** 3 Tests inkl. **echtem semantischem Recall** („Kaffee" für „Welches Getränk mag ich?")
   + Workspace-Scope → 101 gesamt; Backend startet mit pgvector-Extension + Migration.
-- **M2.3 — Self-Improvement** ⏳ Fakten aus Gesprächen ins Profil/Memory (Pydantic-validiert).
+- **M2.3 — Self-Improvement** ✅
+  Nach jedem Chat-Turn destilliert der Agent **dauerhafte Fakten über den Nutzer** aus dem
+  Austausch (`app/core/learning_service.py`): LLM-Call mit striktem Prompt → JSON, **Pydantic-validiert**
+  (`ExtractedFacts`), tolerant geparst (Müll → leere Liste). Die Fakten werden als Memory
+  (`kind="fact"`) gespeichert und ersetzen die rohe Nachrichten-Speicherung aus M2.2 — der Recall
+  liefert so prägnante Erkenntnisse statt roher Sätze. Komplett best-effort: bricht den Chat nie.
+  **Verifiziert:** 3 Tests (Parsing: Trim/Filter/Cap, gültiges + Nicht-JSON via Mock-LLM) → 104 gesamt.
 - **M2.4 — Telos-Integration** ⏳ Mission/Ziele/Challenges als Kontext.
