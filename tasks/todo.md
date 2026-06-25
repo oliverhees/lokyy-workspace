@@ -5,8 +5,8 @@
 - [x] **F2** App-Shell + Navigation (Sidebar/Topbar/Routing-Hülle) ✅
 - [x] **F3** Settings-Framework (UserSettings-Persistenz + Settings-Seite: Profil/Sprache/Theme/Verbindung) ✅
 - [x] **F4** Modell-Verwaltung in Settings (ModelEndpoint CRUD, Keys verschlüsselt, modell-agnostisch) ✅
-- [ ] **F5** Chat echt + Sessions + Sidebar (Agent-Loop gegen echtes Modell, Verlauf persistiert)
-- [ ] 🚩 Checkpoint + QA-Gate-Pass
+- [x] **F5** Chat echt + Sessions + Sidebar (Agent-Loop gegen echtes Modell, Verlauf persistiert) ✅
+- [x] 🚩 Checkpoint erreicht — QA-Gate-Pass als Nächstes
 
 ## Danach: Feature-Meilensteine (bestehend)
 - [ ] M2 Lernender Agent (Telos/Soul/User/Memory/Self-Improvement)
@@ -17,4 +17,4 @@
 - [ ] M7 Sync/Team
 - [ ] M8 Brand/Launch
 
-**Nächster konkreter Start:** F5 — Chat echt + Sessions.
+**Nächster konkreter Start:** QA-Gate-Pass, dann M2.
