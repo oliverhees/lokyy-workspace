@@ -35,6 +35,8 @@ export interface ChatMessage {
 export interface ChatStreamOptions {
   sessionId: string;
   content: string;
+  /** Optional model endpoint override; falls back to the user's default. */
+  modelEndpointId?: string | null;
   signal?: AbortSignal;
   /** Called for every text delta as it arrives. */
   onDelta: (delta: string) => void;
@@ -45,12 +47,12 @@ export interface ChatStreamOptions {
  * The message is persisted server-side. Throws if the connection fails or the
  * server responds with a non-OK status — callers should catch and surface a hint.
  */
-export async function streamChat({ sessionId, content, signal, onDelta }: ChatStreamOptions): Promise<void> {
+export async function streamChat({ sessionId, content, modelEndpointId, signal, onDelta }: ChatStreamOptions): Promise<void> {
   const res = await fetch(getApiBase() + "/chat", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
-    body: JSON.stringify({ session_id: sessionId, content }),
+    body: JSON.stringify({ session_id: sessionId, content, model_endpoint_id: modelEndpointId ?? null }),
     signal,
   });
 

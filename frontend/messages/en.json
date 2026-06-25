@@ -14,7 +14,20 @@
     "echoPrefix": "Echo:",
     "newChat": "New chat",
     "noConversations": "No conversations yet.",
-    "delete": "Delete"
+    "delete": "Delete",
+    "noModel": "No model",
+    "placeholderFull": "Lokyy: send a message, upload files, open a folder or create a scheduled task …",
+    "addActions": "Add actions",
+    "addFiles": "Add files",
+    "skills": "Skills",
+    "mcp": "MCP",
+    "soon": "soon",
+    "switchMode": "Switch mode",
+    "modeStandard": "Standard",
+    "modeAuto": "Auto-edit",
+    "modeYolo": "YOLO",
+    "voice": "Voice input",
+    "workInProject": "Work in a project"
   },
   "conn": {
     "local": "Local",

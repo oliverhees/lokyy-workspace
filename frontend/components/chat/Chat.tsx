@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { streamChat, type ChatMessage } from "@/lib/api";
-import { listModels } from "@/lib/models";
+import { listModels, type ModelEndpoint } from "@/lib/models";
 import { getMessages } from "@/lib/sessions";
 import { ChatInput } from "./ChatInput";
 import { EmptyState } from "./EmptyState";
@@ -19,7 +19,8 @@ export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?
   const [streaming, setStreaming] = useState(false);
   const [phase, setPhase] = useState<ChatPhase>(null);
   const [error, setError] = useState<string | null>(null);
-  const [defaultModel, setDefaultModel] = useState<string | null>(null);
+  const [models, setModels] = useState<ModelEndpoint[]>([]);
+  const [activeModelId, setActiveModelId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Load the session's persisted history whenever the active session changes.
@@ -34,11 +35,15 @@ export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?
     };
   }, [sessionId]);
 
-  // Know the current default model so a freshly streamed answer can show its caption.
+  // Load configured models so the user can switch per conversation; preselect default.
   useEffect(() => {
     let active = true;
     listModels()
-      .then((ms) => active && setDefaultModel(ms.find((m) => m.is_default)?.model ?? null))
+      .then((ms) => {
+        if (!active) return;
+        setModels(ms);
+        setActiveModelId((cur) => cur ?? ms.find((m) => m.is_default)?.id ?? ms[0]?.id ?? null);
+      })
       .catch(() => {});
     return () => {
       active = false;
@@ -73,19 +78,21 @@ export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?
       await streamChat({
         sessionId,
         content: text,
+        modelEndpointId: activeModelId,
         onDelta: (d) => {
           setPhase("writing");
           appendDelta(d);
         },
       });
       // stamp the freshly completed answer with model + time for its caption
+      const usedModel = models.find((m) => m.id === activeModelId)?.model ?? null;
       setMessages((prev) => {
         const next = [...prev];
         const last = next[next.length - 1];
         if (last && last.role === "assistant") {
           next[next.length - 1] = {
             ...last,
-            model_used: defaultModel,
+            model_used: usedModel,
             created_at: new Date().toISOString(),
           };
         }
@@ -136,7 +143,13 @@ export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?
         </div>
       )}
 
-      <ChatInput onSend={send} disabled={streaming} />
+      <ChatInput
+        onSend={send}
+        disabled={streaming}
+        models={models}
+        activeModelId={activeModelId}
+        onSelectModel={setActiveModelId}
+      />
     </div>
   );
 }
