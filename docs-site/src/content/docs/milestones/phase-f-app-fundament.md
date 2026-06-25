@@ -81,6 +81,14 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   Ollama lokal, **Eigene/OpenAI-kompatibel**; Provider-Wahl füllt die Base-URL automatisch.
   **Verifiziert:** Backend-Suite grün (69, LLM-Tests auf LiteLLM-Mock umgestellt), Sichtprüfung
   (10 Provider, OpenRouter-Default, Base-URL-Autofill bei Ollama), Konsole sauber.
+- **F4.2 — Modell-Discovery** ✅
+  Im Modelle-Formular „Modelle laden": Backend-Proxy `POST /models/discover` ruft die
+  OpenAI-kompatible `{base_url}/models`-Liste des Anbieters (z. B. OpenRouter) — der Key wird
+  nur für den Call genutzt, **nicht gespeichert**. Frontend zeigt die Modelle als Auswahl
+  (datalist: tippen/filtern oder wählen) statt manueller ID. Native Provider ohne base_url →
+  freundlicher Fallback auf manuelle Eingabe. **Verifiziert:** Backend-Tests (Auth, Kein-Base-URL
+  → 400 → 77 gesamt) + Sichtprüfung gegen lokalen Mock („5 Modelle geladen"). _Hinweis fürs
+  QA-Gate: ausgehender Call an user-definierte URL → SSRF-Betrachtung (authentifiziert, self-hosted)._
 - **F5 — Chat echt + Sessions + Sidebar** ✅
   **Backend:** `session_service` (owner-scoped Sessions + Messages, lazy Default-Workspace,
   Autotitle aus der ersten Nachricht) + Session-API (`/sessions` GET/POST, `/{id}/messages`,
