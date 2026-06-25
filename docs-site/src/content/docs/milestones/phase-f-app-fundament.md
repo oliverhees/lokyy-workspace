@@ -76,9 +76,12 @@ Dead-Links, daher aktuell „bald"-Markierung).
 (für Nicht-Eingeloggte), nach Login wird auf `/chat` geleitet. Im Mockup ist die
 Startseite nach Login das **Dashboard** („Guten Morgen, …", Stat-Karten, Quick-Actions,
 Übersicht über Workflows/Projekte/Lernen). Das Dashboard zeigt Daten aus mehreren noch
-nicht gebauten Features — daher als **eigener Folge-Task** vorgesehen (Grundgerüst mit
-Platzhaltern früh möglich, echte Daten sobald die Features existieren). _Noch nicht in
-Plane angelegt — Freigabe ausstehend._
+nicht gebauten Features.
+
+**Entscheidung (Oliver):** beim Plan bleiben — erst **F3 → F5** (Settings, Modell, echter
+Chat), das **Dashboard danach als eigener Task**, damit es echte Daten anzeigt statt leerer
+Platzhalter. Bis dahin bleibt nach Login `/chat` die Startseite. _Dashboard-Task wird bei
+Freigabe nach F5 angelegt._
 
 ## Notizen
 
