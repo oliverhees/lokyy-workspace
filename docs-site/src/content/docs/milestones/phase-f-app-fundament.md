@@ -110,6 +110,13 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   wird pro Nachricht persistiert (`chat_messages.model_used` + Migration, `created_at`/`model_used`
   in der Messages-API). Verifiziert (Chrome gegen Mock): „Denkt nach …" + Spinner während Latenz,
   Caption z. B. „test-pro · 17:56". 77 Backend-Tests grün, Konsole sauber.
+- **F5.2 — Eingabeleiste (Modell-Wahl + Aktions-Vorschau)** ✅
+  Chat-Eingabeleiste nach dem Referenz-Vorbild: **Modell-Selector funktional** (pro Konversation
+  wechselbar, gruppiert nach Anbieter; `/chat` akzeptiert optionales `model_endpoint_id`, sonst
+  Default). Sichtbare **Vorschau** der kommenden Aktionen mit „bald"-Markierung: „+"-Menü
+  (Dateien/Skills/MCP → M3/M4), Modus-Selector (Standard/Auto/YOLO → Agent-Mode M2/M4),
+  Spracheingabe (disabled). Runder Senden-Button, neuer Platzhalter, „In einem Projekt arbeiten".
+  Verifiziert (Chrome): Leiste wie Referenz, Modell-Dropdown gruppiert + wählbar, Konsole sauber.
 
 > **🚩 Checkpoint erreicht:** Vollwertige, benutzbare App — Login → Shell → Settings/Modell →
 > **echter Chat mit persistiertem Verlauf**. Nächster Schritt: **QA-Gate-Pass**, dann die
