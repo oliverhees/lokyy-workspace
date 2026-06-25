@@ -16,7 +16,9 @@ description: Funktionierender Chat-Agent mit Tools, modell-agnostisch.
 - **T1.4 — RAG-Tool-Selektion** ✅
   `ToolSelector` (`app/core/tool_selection.py`): embedding-basierte Relevanz-Auswahl (Cosine, top-k), respektiert Admin-Policy, pluggable `EmbedFn` (fastembed-Default, lokal). Nur relevante Tools in den Prompt → gegen Prompt-Bloat (wichtig für kleine Modelle). 4 Tests grün (46 gesamt). **Engineer-Entscheidung:** In-Memory-Cosine für die kleine Tool-Menge (pgvector kommt beim großen Memory/RAG-Layer in M2, wo es hingehört — dieselbe `EmbedFn`-Abstraktion).
 
-**🎉 M1 (Agent-Kern) abgeschlossen — 6/6.** LLM-Layer · Agent-Loop · Tool-System+Policy · Tool-Selektion · Sandbox · Chat-UI. Offen für M1-Integration: `/chat`-Backend-Endpoint (verdrahtet LLM+Loop+Tools→Chat-UI).
+**M1 (Agent-Kern) — Bausteine 6/6** + **Integration ✅.** LLM-Layer · Agent-Loop · Tool-System+Policy · Tool-Selektion · Sandbox · Chat-UI.
+
+- **M1-Integration: `/chat`-Endpoint** ✅ — `app/api/chat_routes.py`: POST `/chat` als SSE-Stream (LLM-Stream wenn konfiguriert, sonst Echo-Fallback), CORS für die PWA. **End-to-End mit echtem Chrome verifiziert** (Chat-UI ↔ Backend, Status „verbunden", Backend-Antwort im Stream). Nächste Stufe: voller Agent-Loop mit Tools/Selektor im Stream + Auth-Enforcement am Endpoint.
 - **T1.5 — Sandbox für Shell/Code-Tools** ✅
   Subprocess-Isolation (`app/core/sandbox.py`): async `run_shell`/`run_python`, Timeout (Prozessgruppe-SIGKILL), Output-Cap, isoliertes temp-Workdir, bereinigte Env (Allow-List), `python -I`. 9 Tests. Container/Egress als nächste Stufe. *(Parallel von Subagent gebaut.)*
 - **T1.6 — Chat-UI** ✅

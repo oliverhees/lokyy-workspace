@@ -32,6 +32,18 @@ class Settings(BaseSettings):
     secret_key: str = Field(default="change_me_generate_a_random_value")
     secure_cookies: bool = Field(default=False)
 
+    # LLM (optional — if unset, /chat uses an echo fallback for dev/demo)
+    llm_base_url: str = Field(default="")
+    llm_model: str = Field(default="")
+    llm_api_key: str = Field(default="")
+
+    # CORS — the PWA talks cross-origin to the backend (local/remote switch)
+    allowed_origins: str = Field(default="http://localhost:3000,http://localhost:3008")
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
+
     @property
     def is_production(self) -> bool:
         return self.app_env.lower() in {"production", "prod"}
