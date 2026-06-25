@@ -70,6 +70,17 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   (CRUD, Crypto-Roundtrip, Default-Logik, Owner-Isolation, Key-nie-im-Klartext → 67 gesamt),
   Sichtprüfung (Modell anlegen → Liste, Badges) + **DB-Check: Key liegt als Fernet-Token vor,
   kein Klartext**. Konsole sauber.
+- **F4.1 — LLM-Layer auf LiteLLM (Multi-Provider)** ✅
+  Eigener httpx-LLM-Layer durch **LiteLLM** ersetzt (`app/core/llm.py`) — eine API + ein
+  Response-Format für 100+ Provider. Routing: `"<provider>/<model>"`, `custom` → OpenAI-kompatibel
+  via `api_base` (deckt selbst gehostete / OpenAI-API-Standard-Endpoints ab). `chat()`/`stream_chat()`
+  behalten ihre Form → **Agent-Loop und Chat-Route unverändert** (Agent-Loop war eh über einen
+  injizierten Caller entkoppelt). Provider-Liste zentral (`KNOWN_PROVIDERS`), von Modell-Service +
+  Routes genutzt. **Frontend:** Anbieter-Presets (`lib/providers.ts`) im Modelle-Tab — OpenRouter
+  prominent („alle großen Modelle"), OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, Together,
+  Ollama lokal, **Eigene/OpenAI-kompatibel**; Provider-Wahl füllt die Base-URL automatisch.
+  **Verifiziert:** Backend-Suite grün (69, LLM-Tests auf LiteLLM-Mock umgestellt), Sichtprüfung
+  (10 Provider, OpenRouter-Default, Base-URL-Autofill bei Ollama), Konsole sauber.
 - **F5 — Chat echt + Sessions + Sidebar** ⏳
   `/chat` nutzt den echten Agent-Loop gegen das konfigurierte Modell; Sessions persistieren;
   Sidebar mit Konversationsliste. **🚩 Checkpoint + QA-Gate** danach, dann M2 ff.
