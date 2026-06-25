@@ -21,6 +21,13 @@ class RegisterIn(BaseModel):
     display_name: str = Field(min_length=1)
 
 
+class SignupIn(BaseModel):
+    organization_name: str = Field(min_length=1)
+    email: EmailStr
+    password: str = Field(min_length=8)
+    display_name: str = Field(min_length=1)
+
+
 class LoginIn(BaseModel):
     email: EmailStr
     password: str
@@ -60,6 +67,20 @@ def register(body: RegisterIn, db: Session = Depends(get_session)) -> User:
         )
     except auth.AuthError as e:
         raise HTTPException(status.HTTP_409_CONFLICT, str(e))
+
+
+@router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+def signup(body: SignupIn, response: Response, db: Session = Depends(get_session)) -> User:
+    """Bootstrap a fresh self-hosted instance: org + first admin, then auto-login."""
+    try:
+        user = auth.signup(
+            db, organization_name=body.organization_name, email=body.email,
+            password=body.password, display_name=body.display_name,
+        )
+    except auth.AuthError as e:
+        raise HTTPException(status.HTTP_409_CONFLICT, str(e))
+    _set_session_cookie(response, auth.create_session(db, user=user))
+    return user
 
 
 @router.post("/login", response_model=UserOut)

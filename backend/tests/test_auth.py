@@ -34,6 +34,19 @@ def test_register_and_authenticate():
         auth.authenticate(db, email="a@x.de", password="wrong")
 
 
+def test_signup_creates_org_and_admin():
+    db = _db()
+    user = auth.signup(db, organization_name="Lokyy GmbH", email="Owner@x.de",
+                       password="pw123456", display_name="Owner")
+    assert user.email == "owner@x.de"  # normalized
+    assert user.is_org_admin is True
+    assert user.organization_id  # a fresh org was created and linked
+    org = db.get(Organization, user.organization_id)
+    assert org is not None and org.name == "Lokyy GmbH"
+    # the new owner can authenticate immediately
+    assert auth.authenticate(db, email="owner@x.de", password="pw123456").id == user.id
+
+
 def test_duplicate_email_rejected():
     db = _db()
     org = _org(db)

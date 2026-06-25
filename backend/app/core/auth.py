@@ -16,7 +16,7 @@ from app.core.security import (
     verify_password,
 )
 from app.models.auth import ApiToken, AuthSession, BackupCode
-from app.models.entities import User, utcnow
+from app.models.entities import Organization, User, utcnow
 
 SESSION_TTL_DAYS = 7
 _SESSION_BYTES = 32
@@ -43,6 +43,24 @@ def register_user(db: Session, *, organization_id: str, email: str, password: st
     db.commit()
     db.refresh(user)
     return user
+
+
+def signup(db: Session, *, organization_name: str, email: str, password: str,
+           display_name: str) -> User:
+    """Self-hosting bootstrap: create an Organization and its first User as org admin.
+
+    This is the entry point for a fresh self-hosted instance — the owner signs up,
+    gets their own tenant, and becomes its admin. Subsequent members are added via
+    register_user() against the existing organization_id.
+    """
+    org = Organization(name=organization_name.strip())
+    db.add(org)
+    db.commit()
+    db.refresh(org)
+    return register_user(
+        db, organization_id=org.id, email=email, password=password,
+        display_name=display_name, is_org_admin=True,
+    )
 
 
 def authenticate(db: Session, *, email: str, password: str) -> User:
