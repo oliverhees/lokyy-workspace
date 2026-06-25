@@ -33,9 +33,16 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   (`alembic upgrade head`, nicht `init_db`). **Verifiziert:** Signup/Login E2E grün gegen
   echtes Postgres (Daten in `users`/`organizations` geprüft), UI-Login bestätigt.
   Start: `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db`.
-- **F2 — App-Shell + Navigation** ⏳
-  Authentifizierte Layout-Hülle: Sidebar (Menüpunkte), Topbar (User-Menü,
-  Connection-Switch, Sprache), Routing-Gruppe. Hülle, in die alle Features einhängen.
+- **F2 — App-Shell + Navigation** ✅
+  Authentifizierte Layout-Hülle über die Route-Gruppe `app/(app)/` (URL bleibt unverändert):
+  `(app)/layout.tsx` umschließt alle Feature-Seiten mit `RequireAuth` + persistenter
+  **Sidebar** (`components/shell/Sidebar.tsx`: Logo, Nav mit Aktiv-Highlight via
+  `usePathname`; Chat aktiv, Dashboard/Einstellungen als „bald" disabled — sichtbare
+  Produktform ohne Dead-Links) und **Topbar** (`components/shell/Topbar.tsx`: Seitentitel
+  aus dem Pfad, Connection-Switch, Sprache, `UserMenu`). Chat von `app/chat/` nach
+  `app/(app)/chat/` migriert, eigener Header entfernt (kommt jetzt aus der Shell).
+  Nav-Labels i18n (DE/EN). **Verifiziert (Chrome):** Shell rendert, Chat-Highlight aktiv,
+  „bald"-Items sind keine Links, Logout aus der Topbar → `/login`. Build + Konsole sauber.
 - **F3 — Settings-Framework** ⏳
   Zentrale Einstellungen (Backend-Persistenz + Settings-Seite: Profil, Sprache/Theme,
   Verbindung lokal/server). Erweiterbar.
