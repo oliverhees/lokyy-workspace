@@ -163,6 +163,14 @@ alle Agenten brachen mit 0 Output ab. Daraus die Regeln:
 - **Test-driven** wo sinnvoll (RED→GREEN), grüner Build vor jedem Commit.
 - **Mehr Commits in kleineren Schritten:** atomare Commits pro logischem Schritt (Modelle,
   Migration, Tests, Doku je eigener Commit), nicht ein Riesen-Commit pro Task. Aussagekräftige Messages.
+- **UI-Sichtprüfung vor „Done" (Pflicht, wo sinnvoll):** Jede UI-Funktion/Seite vor Abschluss
+  per **Screenshot mit echtem Chrome** (chrome-devtools/Interceptor) verifizieren — tut sie was sie
+  soll UND sieht gut aus (UI/UX, Brand)? Ein UI-Task gilt **erst nach erfolgreicher Sichtprüfung**
+  als abgeschlossen. Nur bei UI-relevanten Tasks (reines Backend braucht keine Sichtprüfung).
+- **Multilanguage (i18n) ist Grundarchitektur:** ALLE UI-Strings extern/übersetzbar (DE default,
+  EN vorbereitet). Keine hardcoded Strings in Komponenten — von Anfang an, nicht nachgerüstet.
+- **Workflows nutzen, wo es Sinn macht:** für breite/parallelisierbare Arbeit Multi-Agent-Workflows
+  (mit agent-skills) einsetzen; bei zusammenhängenden/sicherheitskritischen Tasks den /build-Flow.
 - **Doku (Starlight) zu jedem Task** — siehe Direktive 8.
 
 ---
