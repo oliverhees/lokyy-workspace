@@ -13,7 +13,8 @@ description: Lauffähiges Skelett, public auf GitHub, von Tag 1.
   Lauffähiger Container-Stack: FastAPI-Backend (pydantic-settings für getypte Config) mit `/health` + `/`, PostgreSQL+pgvector (`pgvector/pgvector:pg17`, healthcheck, intern-only). pytest grün, End-to-End gegen den echten Stack verifiziert. Host-Ports konfigurierbar (Backend default 8008).
 - **T0.3 — DB-Fundament + owner/org-scoping** ✅
   SQLModel-Entitäten (Organization, User, Workspace, Membership, ChatSession, ChatMessage) mit durchgängigem `organization_id`/`owner_id`-Scoping (`app/core/scoping.py`), FK-`CASCADE`, `updated_at`-`onupdate`. Alembic eingerichtet (env.py auf SQLModel-Metadaten) + erste Migration generiert & gegen Postgres verifiziert. 5 Tests grün. Code-Review (5 Achsen) durchgeführt, Findings eingearbeitet. Siehe [ADR-0001](/architecture/adr-0001-datenbank/).
-- **T0.4 — Auth: Sessions, 2FA, API-Tokens** ⬜
+- **T0.4 — Auth: Sessions, 2FA, API-Tokens** ✅
+  argon2id-Passwörter, server-seitige (revozierbare) Sessions, TOTP-2FA + Einmal-Backup-Codes, gehashte API-Tokens mit Scopes. HTTP-Endpoints (`/auth/register|login|logout|me|2fa/setup|2fa/enable|tokens`) mit Pydantic-Schemas; Auth-Dependency (Bearer-Token **oder** httponly-Session-Cookie). Alembic-Migration `d5bfeaca19b8`. 18 Tests grün. Secrets nur als Hash gespeichert.
 - **T0.5 — Next.js-PWA-Grundgerüst + Verbindungs-Switch** ⬜
 - **T0.6 — CI + Test-Grundgerüst** ⬜
 

@@ -13,7 +13,7 @@ Runnable skeleton: backend + frontend + DB + auth in Docker, public on GitHub fr
 - ✅ Monorepo + License (AGPL-3.0 + CLA), README, secret hygiene, public repo
 - ✅ Docker Compose: FastAPI + PostgreSQL + pgvector (runnable stack, pytest green)
 - ✅ DB foundation + owner/org scoping (SQLModel + Alembic, migration verified)
-- ⬜ Auth: sessions, 2FA, API tokens
+- ✅ Auth: sessions, 2FA (TOTP + backup codes), API tokens (argon2, hashed secrets)
 - ⬜ Next.js PWA skeleton + connection switch
 - ⬜ CI + test scaffold
 
