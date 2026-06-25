@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lokyy Workspace — Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+tailwind.config = { darkMode:'class', theme:{ extend:{
+  fontFamily:{ sans:['Inter','sans-serif'], mono:['JetBrains Mono','monospace'] },
+  colors:{ brand:{cyan:'#22D3EE',blue:'#2563EB',deep:'#1D4ED8'}, navy:'#0B1120' }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',sans-serif}
+  .grad{background:linear-gradient(135deg,#22D3EE 0%,#2563EB 100%)}
+  .grad-text{background:linear-gradient(135deg,#22D3EE 0%,#2563EB 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .glow{box-shadow:0 0 24px -4px rgba(34,211,238,.45)}
+  .card{transition:transform .15s,border-color .15s}
+  .card:hover{transform:translateY(-2px)}
+  ::-webkit-scrollbar{width:8px} ::-webkit-scrollbar-thumb{background:rgba(100,116,139,.4);border-radius:4px}
+</style>
+</head>
+<body class="bg-slate-50 dark:bg-navy text-slate-900 dark:text-slate-200">
+<div class="h-screen flex flex-col">
+
+  <!-- TOPBAR -->
+  <header class="h-14 shrink-0 flex items-center justify-between px-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 backdrop-blur">
+    <div class="flex items-center gap-3">
+      <img src="../../assets/brand/lokyy-logo.png" class="h-8 w-8">
+      <span class="text-xl font-extrabold tracking-tight">lokyy<span class="grad-text"> workspace</span></span>
+      <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">KI-Betriebssystem</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-cyan-50 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/30"><span class="h-1.5 w-1.5 rounded-full bg-cyan-500 glow"></span> Anonymisierung an</span>
+      <span class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Server · synchron</span>
+      <div class="flex items-center text-xs rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden"><span class="px-2.5 py-1.5 text-slate-500 dark:text-slate-400">Lokal</span><span class="px-2.5 py-1.5 grad text-white font-semibold">Remote</span></div>
+      <button onclick="document.documentElement.classList.toggle('dark')" class="h-8 w-8 grid place-items-center rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"><span class="dark:hidden">🌙</span><span class="hidden dark:inline">☀️</span></button>
+      <div class="h-8 w-8 rounded-full grad grid place-items-center text-white text-sm font-bold">O</div>
+    </div>
+  </header>
+
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- ICON NAV RAIL -->
+    <nav class="w-16 shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 flex flex-col items-center py-3 gap-1 text-slate-400">
+      <a class="h-10 w-10 grid place-items-center rounded-xl grad text-white" title="Dashboard">▦</a>
+      <a class="h-10 w-10 grid place-items-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" title="Chats">💬</a>
+      <a class="h-10 w-10 grid place-items-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" title="Projekte">📁</a>
+      <a class="h-10 w-10 grid place-items-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" title="Workflows">⚡</a>
+      <a class="h-10 w-10 grid place-items-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" title="Dateien">🗂️</a>
+      <a class="h-10 w-10 grid place-items-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" title="Skills">🧩</a>
+      <a class="h-10 w-10 grid place-items-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" title="Team">👥</a>
+      <div class="mt-auto"><a class="h-10 w-10 grid place-items-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" title="Einstellungen">⚙️</a></div>
+    </nav>
+
+    <!-- DASHBOARD CONTENT -->
+    <main class="flex-1 overflow-auto p-6">
+      <div class="max-w-6xl mx-auto space-y-6">
+
+        <!-- HERO -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-extrabold">Guten Morgen, Oliver 👋</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">lokyy hat über Nacht 2 Workflows abgeschlossen. Hier ist dein Überblick.</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="text-sm font-semibold px-4 py-2 rounded-lg grad text-white hover:opacity-90">+ Neuer Chat</button>
+            <button class="text-sm font-semibold px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">+ Projekt</button>
+            <button class="text-sm font-semibold px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">⚡ Workflow</button>
+          </div>
+        </div>
+
+        <!-- STAT CARDS -->
+        <div class="grid grid-cols-4 gap-4">
+          <div class="card rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-4">
+            <div class="text-xs text-slate-400">Workflows / Woche</div><div class="text-2xl font-extrabold mt-1">37</div><div class="text-xs text-emerald-500 mt-1">▲ 12 %</div>
+          </div>
+          <div class="card rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-4">
+            <div class="text-xs text-slate-400">Zeit gespart</div><div class="text-2xl font-extrabold mt-1 grad-text">14,5 h</div><div class="text-xs text-slate-400 mt-1">diese Woche</div>
+          </div>
+          <div class="card rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-4">
+            <div class="text-xs text-slate-400">Aktive Agenten</div><div class="text-2xl font-extrabold mt-1">3</div><div class="text-xs text-cyan-500 mt-1">● Orchestrator aktiv</div>
+          </div>
+          <div class="card rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-4">
+            <div class="text-xs text-slate-400">Erinnerungen</div><div class="text-2xl font-extrabold mt-1">142</div><div class="text-xs text-slate-400 mt-1">lokyy lernt dich</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+
+          <!-- WORKFLOWS (span 2) -->
+          <div class="col-span-2 card rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-5">
+            <div class="flex items-center justify-between mb-4"><h2 class="font-bold">⚡ Workflows</h2><a class="text-xs text-brand-blue font-semibold">Alle ansehen →</a></div>
+            <div class="space-y-2.5">
+              <div class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                <span class="h-2 w-2 rounded-full bg-cyan-400 glow animate-pulse"></span>
+                <div class="flex-1"><div class="text-sm font-medium">Wöchentlicher Umsatz-Report</div><div class="text-xs text-slate-400">Skill 2/3 · analysiert umsatz.csv …</div></div>
+                <span class="text-xs px-2 py-1 rounded-full bg-cyan-50 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-300">läuft</span>
+              </div>
+              <div class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                <div class="flex-1"><div class="text-sm font-medium">E-Mail-Triage Posteingang</div><div class="text-xs text-slate-400">heute 06:00 · 24 Mails sortiert, 3 Entwürfe</div></div>
+                <span class="text-xs px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">erfolgreich</span>
+              </div>
+              <div class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                <div class="flex-1"><div class="text-sm font-medium">Angebot Müller GmbH</div><div class="text-xs text-slate-400">heute 07:14 · Artefakt erstellt</div></div>
+                <span class="text-xs px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">erfolgreich</span>
+              </div>
+              <div class="flex items-center gap-3 p-2.5 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                <span class="text-slate-400">🕑</span>
+                <div class="flex-1"><div class="text-sm font-medium text-slate-500 dark:text-slate-400">Social-Media-Wochenplan</div><div class="text-xs text-slate-400">geplant · morgen 08:00</div></div>
+                <span class="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">geplant</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AGENT / lokyy lernt -->
+          <div class="card rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-5">
+            <div class="flex items-center gap-2 mb-4"><img src="../../assets/brand/lokyy-logo.png" class="h-6 w-6"><h2 class="font-bold">lokyy lernt</h2></div>
+            <div class="space-y-3 text-sm">
+              <div class="text-slate-500 dark:text-slate-400 text-xs">Zuletzt über dich gelernt:</div>
+              <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-xs">„Bevorzugt knappe Angebote mit klarer Preisliste."</div>
+              <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-xs">„Arbeitet meist morgens — Workflows früh planen."</div>
+              <div class="pt-1">
+                <div class="flex justify-between text-xs text-slate-400 mb-1"><span>Telos-Profil</span><span>78 %</span></div>
+                <div class="h-1.5 rounded-full bg-slate-200 dark:bg-slate-800"><div class="h-1.5 rounded-full grad" style="width:78%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RECENT PROJECTS -->
+          <div class="card rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-5">
+            <div class="flex items-center justify-between mb-4"><h2 class="font-bold">📁 Projekte</h2><a class="text-xs text-brand-blue font-semibold">Alle →</a></div>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50"><span class="h-7 w-7 rounded-lg grad grid place-items-center text-white text-xs">M</span><div class="flex-1"><div class="font-medium">Müller GmbH</div><div class="text-xs text-slate-400">12 Dateien · vor 2 Std</div></div></div>
+              <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50"><span class="h-7 w-7 rounded-lg bg-slate-200 dark:bg-slate-700 grid place-items-center text-xs">S</span><div class="flex-1"><div class="font-medium">Steuer 2026</div><div class="text-xs text-slate-400">8 Dateien · gestern</div></div></div>
+              <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50"><span class="h-7 w-7 rounded-lg bg-slate-200 dark:bg-slate-700 grid place-items-center text-xs">M</span><div class="flex-1"><div class="font-medium">Marketing</div><div class="text-xs text-slate-400">5 Dateien · 3 Tage</div></div></div>
+            </div>
+          </div>
+
+          <!-- SYSTEM & SECURITY -->
+          <div class="card rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-5">
+            <h2 class="font-bold mb-4">🛡️ System &amp; Sicherheit</h2>
+            <div class="space-y-2.5 text-sm">
+              <div class="flex items-center justify-between"><span class="text-slate-500 dark:text-slate-400">Modus</span><span class="font-medium">Remote (Server)</span></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500 dark:text-slate-400">Synchronisation</span><span class="text-emerald-500 font-medium">● synchron</span></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500 dark:text-slate-400">Anonymisierung</span><span class="text-cyan-500 font-medium">● aktiv</span></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500 dark:text-slate-400">Modell</span><span class="font-medium font-mono text-xs">llama-3 · lokal</span></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500 dark:text-slate-400">Verschlüsselung</span><span class="text-emerald-500 font-medium">● TLS + at rest</span></div>
+            </div>
+          </div>
+
+          <!-- TEAM -->
+          <div class="card rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 p-5">
+            <div class="flex items-center justify-between mb-4"><h2 class="font-bold">👥 Geteilte Workspaces</h2><a class="text-xs text-brand-blue font-semibold">+ Teilen</a></div>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50"><div class="h-7 w-7 rounded-full grad grid place-items-center text-white text-xs">T</div><div class="flex-1"><div class="font-medium">Team Steuer</div><div class="text-xs text-slate-400">3 Mitglieder · 1 Änderung offen</div></div><span class="text-xs px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-300">sync nötig</span></div>
+              <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50"><div class="h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700 grid place-items-center text-xs">K</div><div class="flex-1"><div class="font-medium">Kunden-Vault</div><div class="text-xs text-slate-400">2 Mitglieder · synchron</div></div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

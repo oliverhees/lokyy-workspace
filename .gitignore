@@ -1,0 +1,55 @@
+# ─── Secrets (Build in Public: NEVER commit) ───────────────
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+**/credentials.json
+
+# ─── Data / runtime ────────────────────────────────────────
+data/
+logs/
+*.db
+*.sqlite3
+uploads/
+generated/
+backups/
+
+# ─── Python ────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# ─── Node / Next.js / Astro ────────────────────────────────
+node_modules/
+.next/
+out/
+.astro/
+.turbo/
+*.tsbuildinfo
+.pnpm-debug.log*
+npm-debug.log*
+yarn-error.log*
+
+# ─── Editor / OS ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# ─── Project-local scratch ─────────────────────────────────
+Plans/
+scratchpad/

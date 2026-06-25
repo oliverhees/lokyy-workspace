@@ -1,0 +1,17 @@
+{
+  "name": "lokyy-docs",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Lokyy Workspace documentation (Astro Starlight)",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.30.0",
+    "astro": "^5.0.0",
+    "sharp": "^0.33.0"
+  }
+}
