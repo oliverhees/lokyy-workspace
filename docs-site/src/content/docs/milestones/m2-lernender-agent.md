@@ -36,4 +36,12 @@ Baut auf der Fundament-Phase (F) auf. Vertikale Slices, jeder für sich erlebbar
   (`kind="fact"`) gespeichert und ersetzen die rohe Nachrichten-Speicherung aus M2.2 — der Recall
   liefert so prägnante Erkenntnisse statt roher Sätze. Komplett best-effort: bricht den Chat nie.
   **Verifiziert:** 3 Tests (Parsing: Trim/Filter/Cap, gültiges + Nicht-JSON via Mock-LLM) → 104 gesamt.
-- **M2.4 — Telos-Integration** ⏳ Mission/Ziele/Challenges als Kontext.
+- **M2.4 — Telos-Integration** ✅
+  `telos`-Feld am `AgentContext` (Mission/Ziele/Challenges als Markdown). Der Context-Assembler
+  hängt es als eigenen Abschnitt an den System-Prompt mit dem Hinweis, Vorschläge an diesen Zielen
+  auszurichten. Bearbeitbar im Agent-Tab (drittes Feld). Migration mit `server_default` (bestehende
+  Zeilen). **Verifiziert:** Telos-Assembler-Test (+ leerer Fall) → 105 Tests grün; Sichtprüfung.
+
+> **🚩 M2 abgeschlossen:** Der Agent hat Persona, kennt den Nutzer, erinnert sich (pgvector),
+> lernt aus Gesprächen und richtet sich an den Zielen aus — alles lokal/DSGVO-konform.
+> Vor dem Meilenstein-Haken steht noch ein **QA-Gate** für M2 (analog Phase F).
