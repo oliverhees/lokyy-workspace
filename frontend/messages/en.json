@@ -22,6 +22,13 @@
     "noServer": "No server configured (NEXT_PUBLIC_SERVER_URL)"
   },
   "lang": { "label": "Language", "de": "Deutsch", "en": "English" },
+  "nav": {
+    "chat": "Chat",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "soon": "soon",
+    "comingSoon": "Coming soon"
+  },
   "auth": {
     "loginSubtitle": "Sign in to your workspace.",
     "signupSubtitle": "Set up your workspace.",
