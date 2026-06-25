@@ -105,6 +105,28 @@ class UserSettings(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=utcnow, nullable=False, sa_column_kwargs=_UPDATED)
 
 
+class ModelEndpoint(SQLModel, table=True):
+    """A configured LLM endpoint (F4) — model-agnostic. Owner-scoped.
+
+    The API key is stored ENCRYPTED (api_key_encrypted) via app.core.crypto and is
+    never returned in plaintext by the API. base_url + model + provider make this
+    work against any OpenAI-compatible or Anthropic endpoint (cloud or local).
+    """
+
+    __tablename__ = "model_endpoints"
+
+    id: str = Field(default_factory=gen_id, primary_key=True)
+    user_id: str = Field(foreign_key="users.id", index=True, ondelete="CASCADE")
+    name: str
+    provider: str = Field(default="openai")  # openai (OpenAI-compatible) | anthropic
+    base_url: str
+    model: str
+    api_key_encrypted: str = Field(default="")  # ciphertext; empty = no key (e.g. local)
+    is_default: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=utcnow, nullable=False)
+    updated_at: datetime = Field(default_factory=utcnow, nullable=False, sa_column_kwargs=_UPDATED)
+
+
 class ChatSession(SQLModel, table=True):
     """A chat/agent/research session inside a workspace.
 
