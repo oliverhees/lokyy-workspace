@@ -3,16 +3,21 @@
 Responses expose `has_api_key` (bool) only — the plaintext key is never returned.
 The current user comes from the auth dependency, so every operation is owner-scoped.
 """
-from typing import Literal
-
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from sqlmodel import Session
 
 from app.api.deps import get_current_user
 from app.core import model_service
 from app.core.db import get_session
+from app.core.llm import KNOWN_PROVIDERS
 from app.models.entities import ModelEndpoint, User
+
+
+def _check_provider(v: str | None) -> str | None:
+    if v is not None and v not in KNOWN_PROVIDERS:
+        raise ValueError(f"unknown provider: {v}")
+    return v
 
 router = APIRouter(prefix="/models", tags=["models"])
 
@@ -29,19 +34,29 @@ class ModelOut(BaseModel):
 
 class ModelCreateIn(BaseModel):
     name: str = Field(min_length=1, max_length=120)
-    provider: Literal["openai", "anthropic"] = "openai"
-    base_url: str = Field(min_length=1)
+    provider: str = "openai"
+    base_url: str = ""  # optional: native providers (Anthropic, Gemini) use LiteLLM defaults
     model: str = Field(min_length=1)
     api_key: str = ""
     is_default: bool = False
 
+    @field_validator("provider")
+    @classmethod
+    def _check(cls, v: str) -> str:
+        return _check_provider(v)  # type: ignore[return-value]
+
 
 class ModelUpdateIn(BaseModel):
     name: str | None = Field(default=None, max_length=120)
-    provider: Literal["openai", "anthropic"] | None = None
+    provider: str | None = None
     base_url: str | None = None
     model: str | None = None
     api_key: str | None = None  # null = unchanged, "" = clear
+
+    @field_validator("provider")
+    @classmethod
+    def _check(cls, v: str | None) -> str | None:
+        return _check_provider(v)
 
 
 def _out(ep: ModelEndpoint) -> ModelOut:

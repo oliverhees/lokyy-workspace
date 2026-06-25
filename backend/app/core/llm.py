@@ -1,24 +1,43 @@
-"""Multi-provider LLM layer (M1/T1.1).
+"""Multi-provider LLM layer (M1/T1.1, rebuilt on LiteLLM in F4.1).
 
-Model-agnostic by design. Most providers (Ollama, vLLM, llama.cpp, LM Studio,
-Mistral-EU, OpenRouter, OpenAI) speak the OpenAI Chat Completions format; Anthropic
-uses its own Messages API. We normalize both behind `chat()` / `stream_chat()`.
+Model-agnostic by design. LiteLLM normalizes 100+ providers behind one API and one
+response shape, so we no longer hand-roll per-provider HTTP/parsing. Adding a provider
+is a config/preset change, not new transport code.
 
-Pure transport over httpx — no global state — so it's testable with a mock transport.
+Routing rule: every provider is addressed as `"<provider>/<model>"`. "custom" maps to
+the OpenAI-compatible path (`openai/<model>` + api_base) — that covers self-hosted and
+any OpenAI-API-standard endpoint. A base_url, when set, is passed as `api_base` and
+overrides the provider default (needed for OpenRouter-style and local endpoints).
+
+`chat()` / `stream_chat()` keep their previous shapes so the agent loop (which takes an
+injected caller) and the chat route need no structural changes.
 """
 from __future__ import annotations
 
-import json
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from enum import Enum
 
-import httpx
+import litellm
+
+# Curated provider ids. Most are OpenAI-compatible; LiteLLM knows their defaults.
+# "custom" = any OpenAI-API-standard endpoint (self-hosted / unlisted) via api_base.
+KNOWN_PROVIDERS = {
+    "openai",
+    "anthropic",
+    "openrouter",
+    "groq",
+    "mistral",
+    "deepseek",
+    "together_ai",
+    "gemini",
+    "ollama",
+    "azure",
+    "custom",
+}
 
 
-class Provider(str, Enum):
-    openai = "openai"  # OpenAI-compatible (covers most local + cloud providers)
-    anthropic = "anthropic"
+class Provider(str):
+    """Provider id (free string; validated against KNOWN_PROVIDERS at the edges)."""
 
 
 @dataclass
@@ -26,105 +45,75 @@ class LLMConfig:
     base_url: str
     model: str
     api_key: str | None = None
-    provider: Provider = Provider.openai
+    provider: str = "openai"
     timeout: float = 120.0
     extra_headers: dict[str, str] = field(default_factory=dict)
 
 
 class Message(dict):
-    """A chat message: {"role": ..., "content": ...}. dict for easy JSON."""
+    """A chat message: {"role": ..., "content": ...}."""
 
     def __init__(self, role: str, content: str):
         super().__init__(role=role, content=content)
 
 
-def detect_provider(base_url: str) -> Provider:
-    """Heuristic provider detection from the endpoint URL."""
-    u = base_url.lower()
+def detect_provider(base_url: str) -> str:
+    """Best-effort provider id from an endpoint URL (used for legacy/auto configs)."""
+    u = (base_url or "").lower()
     if "anthropic" in u:
-        return Provider.anthropic
-    return Provider.openai
+        return "anthropic"
+    if "openrouter" in u:
+        return "openrouter"
+    if "groq" in u:
+        return "groq"
+    if "mistral" in u:
+        return "mistral"
+    if "deepseek" in u:
+        return "deepseek"
+    if "11434" in u or "ollama" in u:
+        return "ollama"
+    return "openai"
 
 
-def _headers(cfg: LLMConfig) -> dict[str, str]:
-    h = {"Content-Type": "application/json", **cfg.extra_headers}
-    if cfg.provider is Provider.anthropic:
-        if cfg.api_key:
-            h["x-api-key"] = cfg.api_key
-        h.setdefault("anthropic-version", "2023-06-01")
-    elif cfg.api_key:
-        h["Authorization"] = f"Bearer {cfg.api_key}"
-    return h
+def litellm_model(provider: str, model: str) -> str:
+    """Map our (provider, model) to a LiteLLM model string."""
+    if provider == "custom":
+        return f"openai/{model}"  # OpenAI-API-standard, addressed via api_base
+    return f"{provider}/{model}"
 
 
-def _url(cfg: LLMConfig, *, stream: bool) -> str:
-    base = cfg.base_url.rstrip("/")
-    if cfg.provider is Provider.anthropic:
-        return f"{base}/messages"
-    return f"{base}/chat/completions"
+def build_kwargs(cfg: LLMConfig, messages: list[dict], *, stream: bool) -> dict:
+    """Translate an LLMConfig into LiteLLM acompletion kwargs (pure — unit-testable)."""
+    kwargs: dict = {
+        "model": litellm_model(cfg.provider, cfg.model),
+        "messages": messages,
+        "stream": stream,
+        "timeout": cfg.timeout,
+    }
+    if cfg.base_url:
+        kwargs["api_base"] = cfg.base_url
+    if cfg.api_key:
+        kwargs["api_key"] = cfg.api_key
+    if cfg.extra_headers:
+        kwargs["extra_headers"] = cfg.extra_headers
+    return kwargs
 
 
-def _payload(cfg: LLMConfig, messages: list[dict], *, stream: bool) -> dict:
-    if cfg.provider is Provider.anthropic:
-        sys = [m["content"] for m in messages if m["role"] == "system"]
-        convo = [m for m in messages if m["role"] != "system"]
-        body: dict = {"model": cfg.model, "messages": convo, "max_tokens": 4096, "stream": stream}
-        if sys:
-            body["system"] = "\n\n".join(sys)
-        return body
-    return {"model": cfg.model, "messages": messages, "stream": stream}
+async def chat(messages: list[dict], cfg: LLMConfig, **litellm_overrides) -> str:
+    """Non-streaming completion. Returns the assistant text.
+
+    `litellm_overrides` are forwarded to LiteLLM (e.g. `mock_response=...` in tests).
+    """
+    kwargs = build_kwargs(cfg, messages, stream=False) | litellm_overrides
+    resp = await litellm.acompletion(**kwargs)
+    return resp.choices[0].message.content or ""
 
 
-def _extract_content(cfg: LLMConfig, data: dict) -> str:
-    if cfg.provider is Provider.anthropic:
-        parts = data.get("content", [])
-        return "".join(p.get("text", "") for p in parts if p.get("type") == "text")
-    return data.get("choices", [{}])[0].get("message", {}).get("content", "") or ""
-
-
-def _extract_delta(cfg: LLMConfig, evt: dict) -> str:
-    if cfg.provider is Provider.anthropic:
-        if evt.get("type") == "content_block_delta":
-            return evt.get("delta", {}).get("text", "") or ""
-        return ""
-    return evt.get("choices", [{}])[0].get("delta", {}).get("content", "") or ""
-
-
-async def chat(messages: list[dict], cfg: LLMConfig, *, client: httpx.AsyncClient | None = None) -> str:
-    """Non-streaming completion. Returns the assistant text."""
-    own = client is None
-    client = client or httpx.AsyncClient(timeout=cfg.timeout)
-    try:
-        resp = await client.post(_url(cfg, stream=False), headers=_headers(cfg),
-                                 json=_payload(cfg, messages, stream=False))
-        resp.raise_for_status()
-        return _extract_content(cfg, resp.json())
-    finally:
-        if own:
-            await client.aclose()
-
-
-async def stream_chat(messages: list[dict], cfg: LLMConfig, *,
-                      client: httpx.AsyncClient | None = None) -> AsyncIterator[str]:
-    """Streaming completion. Yields text deltas (SSE `data:` lines)."""
-    own = client is None
-    client = client or httpx.AsyncClient(timeout=cfg.timeout)
-    try:
-        async with client.stream("POST", _url(cfg, stream=True), headers=_headers(cfg),
-                                 json=_payload(cfg, messages, stream=True)) as resp:
-            resp.raise_for_status()
-            async for line in resp.aiter_lines():
-                if not line.startswith("data:"):
-                    continue
-                payload = line[len("data:"):].strip()
-                if payload in ("", "[DONE]"):
-                    continue
-                try:
-                    delta = _extract_delta(cfg, json.loads(payload))
-                except json.JSONDecodeError:
-                    continue
-                if delta:
-                    yield delta
-    finally:
-        if own:
-            await client.aclose()
+async def stream_chat(messages: list[dict], cfg: LLMConfig, **litellm_overrides) -> AsyncIterator[str]:
+    """Streaming completion. Yields text deltas."""
+    kwargs = build_kwargs(cfg, messages, stream=True) | litellm_overrides
+    resp = await litellm.acompletion(**kwargs)
+    async for chunk in resp:
+        delta = chunk.choices[0].delta.content
+        if delta:
+            yield delta

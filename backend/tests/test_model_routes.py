@@ -57,9 +57,9 @@ def test_models_crud_and_key_never_returned():
         listed = client.get("/models").json()
         assert len(listed) == 1 and "sk-supersecret" not in client.get("/models").text
 
-        # invalid provider rejected by the Literal schema
+        # unknown provider rejected by the schema validator
         assert client.post("/models", json={
-            "name": "X", "provider": "gemini", "base_url": "u", "model": "m",
+            "name": "X", "provider": "totally-unknown", "base_url": "u", "model": "m",
         }).status_code == 422
 
         # delete

@@ -87,7 +87,7 @@ def test_invalid_provider_rejected():
     db = _db()
     u = _user(db)
     with pytest.raises(model_service.ModelError):
-        model_service.create_endpoint(db, user_id=u.id, name="X", provider="gemini",
+        model_service.create_endpoint(db, user_id=u.id, name="X", provider="totally-unknown",
                                       base_url="u", model="m")
 
 

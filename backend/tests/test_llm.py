@@ -1,59 +1,52 @@
-"""T1.1: multi-provider LLM layer — OpenAI-compatible + Anthropic, chat + streaming.
+"""M1/T1.1 + F4.1: multi-provider LLM layer on LiteLLM (mapping + mocked calls).
 
-Uses httpx.MockTransport, so no real model server is required.
+Uses LiteLLM's built-in mock_response, so no real model server is required.
 """
-import json
+from app.core import llm
 
-import httpx
 
-from app.core.llm import LLMConfig, Message, Provider, chat, detect_provider, stream_chat
+def test_litellm_model_routing():
+    assert llm.litellm_model("openai", "gpt-5") == "openai/gpt-5"
+    assert llm.litellm_model("anthropic", "claude-sonnet-4") == "anthropic/claude-sonnet-4"
+    assert llm.litellm_model("openrouter", "x/y") == "openrouter/x/y"
+    # custom (self-hosted / OpenAI-API standard) routes via the OpenAI-compatible path
+    assert llm.litellm_model("custom", "my-model") == "openai/my-model"
+
+
+def test_build_kwargs_openai_compatible():
+    cfg = llm.LLMConfig(base_url="https://openrouter.ai/api/v1", model="m",
+                        api_key="sk-1", provider="openrouter")
+    kw = llm.build_kwargs(cfg, [{"role": "user", "content": "hi"}], stream=True)
+    assert kw["model"] == "openrouter/m"
+    assert kw["api_base"] == "https://openrouter.ai/api/v1"
+    assert kw["api_key"] == "sk-1"
+    assert kw["stream"] is True
+
+
+def test_build_kwargs_custom_uses_openai_path_with_base_url():
+    cfg = llm.LLMConfig(base_url="http://localhost:8080/v1", model="local-llm", provider="custom")
+    kw = llm.build_kwargs(cfg, [], stream=False)
+    assert kw["model"] == "openai/local-llm"
+    assert kw["api_base"] == "http://localhost:8080/v1"
+    assert "api_key" not in kw  # none configured (e.g. local)
 
 
 def test_detect_provider():
-    assert detect_provider("https://api.anthropic.com") is Provider.anthropic
-    assert detect_provider("http://localhost:11434/v1") is Provider.openai
-    assert detect_provider("https://openrouter.ai/api/v1") is Provider.openai
+    assert llm.detect_provider("https://api.anthropic.com") == "anthropic"
+    assert llm.detect_provider("https://openrouter.ai/api/v1") == "openrouter"
+    assert llm.detect_provider("http://localhost:11434") == "ollama"
+    assert llm.detect_provider("https://api.openai.com/v1") == "openai"
 
 
-async def test_chat_openai_compatible():
-    def handler(req: httpx.Request) -> httpx.Response:
-        assert req.url.path.endswith("/chat/completions")
-        assert req.headers["Authorization"] == "Bearer k"
-        body = json.loads(req.content)
-        assert body["model"] == "test-model" and body["stream"] is False
-        return httpx.Response(200, json={"choices": [{"message": {"content": "Hallo Welt"}}]})
-
-    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
-        cfg = LLMConfig(base_url="http://x/v1", model="test-model", api_key="k")
-        assert await chat([Message("user", "hi")], cfg, client=client) == "Hallo Welt"
+async def test_chat_returns_text_via_mock():
+    cfg = llm.LLMConfig(base_url="http://x/v1", model="m", api_key="k", provider="openai")
+    out = await llm.chat([{"role": "user", "content": "hi"}], cfg, mock_response="Hallo Welt")
+    assert out == "Hallo Welt"
 
 
-async def test_chat_anthropic():
-    def handler(req: httpx.Request) -> httpx.Response:
-        assert req.url.path.endswith("/messages")
-        assert req.headers["x-api-key"] == "k"
-        assert req.headers["anthropic-version"]
-        body = json.loads(req.content)
-        assert body["system"] == "be nice"  # system extracted
-        return httpx.Response(200, json={"content": [{"type": "text", "text": "Hi"}]})
-
-    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
-        cfg = LLMConfig(base_url="https://api.anthropic.com/v1", model="claude",
-                        api_key="k", provider=Provider.anthropic)
-        msgs = [Message("system", "be nice"), Message("user", "hi")]
-        assert await chat(msgs, cfg, client=client) == "Hi"
-
-
-async def test_stream_chat_openai():
-    def handler(req: httpx.Request) -> httpx.Response:
-        chunks = (
-            'data: {"choices":[{"delta":{"content":"Hal"}}]}\n'
-            'data: {"choices":[{"delta":{"content":"lo"}}]}\n'
-            "data: [DONE]\n"
-        )
-        return httpx.Response(200, content=chunks)
-
-    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
-        cfg = LLMConfig(base_url="http://x/v1", model="m")
-        out = [d async for d in stream_chat([Message("user", "hi")], cfg, client=client)]
-        assert "".join(out) == "Hallo"
+async def test_stream_chat_yields_deltas_via_mock():
+    cfg = llm.LLMConfig(base_url="http://x/v1", model="m", api_key="k", provider="openai")
+    chunks = []
+    async for d in llm.stream_chat([{"role": "user", "content": "hi"}], cfg, mock_response="Stream Text"):
+        chunks.append(d)
+    assert "".join(chunks) == "Stream Text"

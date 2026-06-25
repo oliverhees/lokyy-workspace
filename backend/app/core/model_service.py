@@ -7,9 +7,12 @@ others. All reads/writes are scoped to user_id — a user can only touch their o
 from sqlmodel import Session, select
 
 from app.core import crypto
+from app.core.llm import KNOWN_PROVIDERS
 from app.models.entities import ModelEndpoint
 
-ALLOWED_PROVIDERS = {"openai", "anthropic"}
+# Model-agnostic: any LiteLLM-supported provider, plus "custom" for any
+# OpenAI-API-standard endpoint (self-hosted / unlisted). Single source: llm.py.
+ALLOWED_PROVIDERS = KNOWN_PROVIDERS
 
 
 class ModelError(Exception):
