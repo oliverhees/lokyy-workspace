@@ -6,6 +6,7 @@ feature routers land in the following M0 tasks.
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from app.api.auth_routes import router as auth_router
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -15,6 +16,8 @@ app = FastAPI(
     version="0.0.1",
     description="The self-hosted AI operating system for the self-employed and SMEs.",
 )
+
+app.include_router(auth_router)
 
 
 class HealthResponse(BaseModel):
