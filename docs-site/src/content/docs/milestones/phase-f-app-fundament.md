@@ -43,9 +43,18 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   `app/(app)/chat/` migriert, eigener Header entfernt (kommt jetzt aus der Shell).
   Nav-Labels i18n (DE/EN). **Verifiziert (Chrome):** Shell rendert, Chat-Highlight aktiv,
   „bald"-Items sind keine Links, Logout aus der Topbar → `/login`. Build + Konsole sauber.
-- **F3 — Settings-Framework** ⏳
-  Zentrale Einstellungen (Backend-Persistenz + Settings-Seite: Profil, Sprache/Theme,
-  Verbindung lokal/server). Erweiterbar.
+- **F3 — Settings-Framework** ✅
+  Zentrale Einstellungen, über die alles läuft. **Backend:** `UserSettings` (owner-scoped,
+  1 Zeile/User, get-or-create) + Migration + API `GET/PUT /settings` & `PUT /settings/profile`,
+  strikt validiert (Pydantic `Literal`). **Frontend:** Settings-Seite (`/settings`) mit
+  Sektionen Profil (Name editierbar, E-Mail readonly), Darstellung (Sprache, Theme) und
+  Verbindung (Standard lokal/server); erweiterbar (F4 hängt „Modelle" hier ein). Sidebar-Punkt
+  „Einstellungen" scharf geschaltet. Server-side Source-of-Truth, Client spiegelt
+  Theme/Verbindung in `localStorage` für sofortige Anwendung. **Theme:** echtes class-based
+  Dark/Light via `@custom-variant dark` + Anti-FOUC-Script (Tailwind v4 nutzt sonst nur
+  `prefers-color-scheme`). **Verifiziert:** 8 Backend-Tests (CRUD, Validierung,
+  Owner-Isolation, Auth-Enforcement → 57 gesamt), Sichtprüfung (Theme Dunkel↔Hell schaltet
+  sofort + persistiert in Postgres), Konsole sauber.
 - **F4 — Modell-Verwaltung (modell-agnostisch)** ⏳
   `ModelEndpoint` (base_url, model, **api_key verschlüsselt**) + CRUD-API; Settings-Sektion.
 - **F5 — Chat echt + Sessions + Sidebar** ⏳
@@ -70,7 +79,7 @@ Dead-Links, daher aktuell „bald"-Markierung).
 | Dateien         | _noch nicht_     | M3                     |
 | Skills          | _noch nicht_     | M4                     |
 | Team            | _noch nicht_     | M7 (Sync/Team)         |
-| Einstellungen   | „bald"           | **F3** (Settings-Framework) |
+| Einstellungen   | ✅ aktiv          | **F3** (Settings-Framework) |
 
 **Startseite:** Aktuell ist die öffentliche `app/page.tsx` die Marketing-Landing
 (für Nicht-Eingeloggte), nach Login wird auf `/chat` geleitet. Im Mockup ist die
