@@ -8,14 +8,14 @@ Status: ⬜ planned · 🟦 in progress · ✅ done
 
 ## MVP
 
-### M0 — Foundation & Setup 🟦
+### M0 — Foundation & Setup ✅
 Runnable skeleton: backend + frontend + DB + auth in Docker, public on GitHub from day one.
 - ✅ Monorepo + License (AGPL-3.0 + CLA), README, secret hygiene, public repo
 - ✅ Docker Compose: FastAPI + PostgreSQL + pgvector (runnable stack, pytest green)
 - ✅ DB foundation + owner/org scoping (SQLModel + Alembic, migration verified)
 - ✅ Auth: sessions, 2FA (TOTP + backup codes), API tokens (argon2, hashed secrets)
 - ✅ Next.js PWA skeleton + connection switch (+ i18n DE/EN, screenshot-verified)
-- ⬜ CI + test scaffold
+- ✅ CI + test scaffold (GitHub Actions: pytest + build + secret-scan, all green)
 
 ### M1 — Agent Core ⬜
 Working chat agent with tools, model-agnostic (multi-provider LLM, agent loop, tool system,

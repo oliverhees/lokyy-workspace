@@ -17,7 +17,10 @@ description: Lauffähiges Skelett, public auf GitHub, von Tag 1.
   argon2id-Passwörter, server-seitige (revozierbare) Sessions, TOTP-2FA + Einmal-Backup-Codes, gehashte API-Tokens mit Scopes. HTTP-Endpoints (`/auth/register|login|logout|me|2fa/setup|2fa/enable|tokens`) mit Pydantic-Schemas; Auth-Dependency (Bearer-Token **oder** httponly-Session-Cookie). Alembic-Migration `d5bfeaca19b8`. 18 Tests grün. Secrets nur als Hash gespeichert.
 - **T0.5 — Next.js-PWA-Grundgerüst + Verbindungs-Switch** ✅
   Next.js 15 (App Router, bun) + Tailwind v4 mit Brand-Theme (Cyan→Blau), PWA-Manifest. **Verbindungs-Switch** Lokal/Remote (konfigurierbare Backend-URL + Live-Health-Check). **i18n-Grundarchitektur** (next-intl, DE default + EN, Cookie-basiert) — keine hardcoded Strings. Build grün; **Sichtprüfung** mit echtem Chrome bestanden (DE + EN, Brand, Offline-Erkennung).
-- **T0.6 — CI + Test-Grundgerüst** ⬜
+- **T0.6 — CI + Test-Grundgerüst** ✅
+  GitHub-Actions-Pipeline (`.github/workflows/ci.yml`): Backend-pytest (Python 3.12), Frontend-Build (bun + Next 16), Secret-Scan-Job. Alle 3 Jobs grün auf GitHub.
+
+**🎉 M0 (Fundament) abgeschlossen — 6/6.** Lauffähiges, public, CI-abgesichertes Fundament: Backend (FastAPI+DB+Auth), Frontend (Next.js-PWA+i18n), Docker, Doku.
 
 ## Prinzipien
 
