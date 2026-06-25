@@ -19,10 +19,13 @@
 3. **Rückfragen ausschließlich über Plane und graphify.** Inhaltliche Projekt-Rückfragen
    werden als Plane-Item (Task/Kommentar) dokumentiert; `graphify` dient als Überblick
    über den gesamten Projektstand.
-4. **Komplett & ausschließlich mit dem Plugin „agent-skills" arbeiten.** Das ist das
-   verbindliche Toolset für die gesamte Engineering-Arbeit. Bau-Rhythmus über die
-   agent-skills-Skills: **spec → plan → build → test → ship** (bzw. spec-driven /
-   incremental-implementation). Kein Ad-hoc-Drauflos-Coden außerhalb dieses Plugins.
+4. **Komplett & AUSSCHLIESSLICH mit dem Plugin „agent-skills" arbeiten — die ganze Palette.**
+   Verbindliches Toolset für die gesamte Engineering-Arbeit. Nicht nur `/build`, sondern je
+   nach Aufgabe die passende Skill nutzen: `spec`, `plan`, `build`, `test` /
+   `test-driven-development`, `review` / `code-review-and-quality`, `security-and-hardening`,
+   `documentation-and-adrs`, `debugging-and-error-recovery`, `git-workflow-and-versioning`,
+   `incremental-implementation`, `shipping-and-launch` u. a. Bau-Rhythmus: **spec → plan →
+   build → test → review → ship**. Kein Ad-hoc-Drauflos-Coden außerhalb dieses Plugins.
 5. **Clean-Room-Lizenzhygiene.** odysseus ist AGPL-3.0. Wir dürfen es als Referenz
    *lesen*, aber **niemals Code daraus kopieren/übernehmen**. Implementierung erfolgt
    eigenständig aus Spezifikation/Verhalten. Ziel: vollständig freie Lizenzwahl für uns.

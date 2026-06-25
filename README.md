@@ -16,6 +16,7 @@
   <a href="#license"><img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="License: AGPL-3.0"></a>
   <img src="https://img.shields.io/badge/status-beta-orange.svg" alt="Status: Beta">
   <img src="https://img.shields.io/badge/build%20in%20public-%F0%9F%9A%80-22D3EE.svg" alt="Build in Public">
+  <img src="https://img.shields.io/badge/vibe%20coded-%E2%9C%A8-8B5CF6.svg" alt="Vibe Coded">
   <img src="https://img.shields.io/badge/PRs-welcome-2563EB.svg" alt="PRs welcome">
   <br>
   <img src="https://img.shields.io/badge/Python-FastAPI-009688.svg" alt="Python / FastAPI">
@@ -37,7 +38,7 @@
 
 ---
 
-> ⚠️ **Beta · Build in Public.** Lokyy is in active early development. We build it openly — every milestone, commit and decision happens in public. Follow along, give feedback, and shape it with us. Expect rough edges; the foundation is being laid right now.
+> ⚠️ **Beta · Build in Public · Vibe-Coded.** Lokyy is in active early development and is a **vibe-coding project** — built collaboratively with AI coding agents, transparently and in public. Every milestone, commit and decision happens openly. Follow along, give feedback, and shape it with us. Expect rough edges; the foundation is being laid right now.
 
 ## What is Lokyy?
 
