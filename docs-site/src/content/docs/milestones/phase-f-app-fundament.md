@@ -81,9 +81,25 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   Ollama lokal, **Eigene/OpenAI-kompatibel**; Provider-Wahl füllt die Base-URL automatisch.
   **Verifiziert:** Backend-Suite grün (69, LLM-Tests auf LiteLLM-Mock umgestellt), Sichtprüfung
   (10 Provider, OpenRouter-Default, Base-URL-Autofill bei Ollama), Konsole sauber.
-- **F5 — Chat echt + Sessions + Sidebar** ⏳
-  `/chat` nutzt den echten Agent-Loop gegen das konfigurierte Modell; Sessions persistieren;
-  Sidebar mit Konversationsliste. **🚩 Checkpoint + QA-Gate** danach, dann M2 ff.
+- **F5 — Chat echt + Sessions + Sidebar** ✅
+  **Backend:** `session_service` (owner-scoped Sessions + Messages, lazy Default-Workspace,
+  Autotitle aus der ersten Nachricht) + Session-API (`/sessions` GET/POST, `/{id}/messages`,
+  PATCH-Rename, DELETE). `/chat` umgebaut: auth-geschützt, persistiert die User-Nachricht, streamt
+  vom **Default-Modell** des Nutzers (F4) über die LiteLLM-Schicht (F4.1) und persistiert die
+  Assistant-Nachricht nach dem Stream (frische DB-Session, da die Request-Session beim Streamen
+  schon zu sein kann). Kein Modell → freundlicher Hinweis statt Call. **Frontend:** Chat-Seite mit
+  **Konversations-Sidebar** (neu/wechseln/löschen); Chat lädt den persistierten Verlauf und sendet
+  `{session_id, content}`.
+  **Verifiziert:** 6 neue Backend-Tests (Sessions-CRUD, Owner-Isolation, Autotitle, Cascade, /chat
+  401/Kein-Modell/Stream+Persistenz → **75 gesamt**). **E2E-Sichtprüfung** gegen einen lokalen
+  OpenAI-kompatiblen Mock-Endpoint (als „Eigene"-Modell): senden → echte Streaming-Antwort →
+  Autotitle → Reload behält Verlauf → löschen. Konsole sauber.
+  **LiteLLM-Hinweis:** lokale/eigene Endpoints ohne Auth brauchen trotzdem einen `api_key` — die
+  LLM-Schicht setzt dafür einen harmlosen Platzhalter.
+
+> **🚩 Checkpoint erreicht:** Vollwertige, benutzbare App — Login → Shell → Settings/Modell →
+> **echter Chat mit persistiertem Verlauf**. Nächster Schritt: **QA-Gate-Pass**, dann die
+> Feature-Meilensteine (M2 ff.).
 
 ## Sidebar-Zielbild & Startseite (aus dem Mockup)
 
