@@ -19,6 +19,11 @@
 3. **Rückfragen ausschließlich über Plane und graphify.** Inhaltliche Projekt-Rückfragen
    werden als Plane-Item (Task/Kommentar) dokumentiert; `graphify` dient als Überblick
    über den gesamten Projektstand.
+   - **graphify immer nur mit Sonnet** bauen (Extraction-Subagenten `model="sonnet"`).
+   - **Vor jedem Graph-Build prüfen, dass Plane „on top" ist**: alle erledigten Tasks auf
+     Done + dokumentiert, offene Findings als Items, Code committet/gepusht. Erst dann graphify.
+   - **graphify-Output (`graphify-out/`) NICHT committen** — reines Arbeits-/Überblickstool,
+     via `.gitignore` ausgeschlossen.
 4. **Komplett & AUSSCHLIESSLICH mit dem Plugin „agent-skills" arbeiten — die ganze Palette.**
    Verbindliches Toolset für die gesamte Engineering-Arbeit. Nicht nur `/build`, sondern je
    nach Aufgabe die passende Skill nutzen: `spec`, `plan`, `build`, `test` /
@@ -26,6 +31,8 @@
    `documentation-and-adrs`, `debugging-and-error-recovery`, `git-workflow-and-versioning`,
    `incremental-implementation`, `shipping-and-launch` u. a. Bau-Rhythmus: **spec → plan →
    build → test → review → ship**. Kein Ad-hoc-Drauflos-Coden außerhalb dieses Plugins.
+   Für größere/parallelisierbare Arbeit zusätzlich **Multi-Agent-Workflows**
+   (Workflow-Orchestrierung) mit den agent-skills kombinieren.
 5. **Clean-Room-Lizenzhygiene.** odysseus ist AGPL-3.0. Wir dürfen es als Referenz
    *lesen*, aber **niemals Code daraus kopieren/übernehmen**. Implementierung erfolgt
    eigenständig aus Spezifikation/Verhalten. Ziel: vollständig freie Lizenzwahl für uns.
@@ -154,6 +161,8 @@ alle Agenten brachen mit 0 Output ab. Daraus die Regeln:
   LLM-Outputs** (Tool-Calls/Agent-Antworten validieren statt roh parsen).
 - **bun/bunx** im Frontend (kein npm/npx), **TypeScript** durchgängig.
 - **Test-driven** wo sinnvoll (RED→GREEN), grüner Build vor jedem Commit.
+- **Mehr Commits in kleineren Schritten:** atomare Commits pro logischem Schritt (Modelle,
+  Migration, Tests, Doku je eigener Commit), nicht ein Riesen-Commit pro Task. Aussagekräftige Messages.
 - **Doku (Starlight) zu jedem Task** — siehe Direktive 8.
 
 ---

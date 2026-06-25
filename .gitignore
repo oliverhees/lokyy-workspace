@@ -53,3 +53,6 @@ Thumbs.db
 # ─── Project-local scratch ─────────────────────────────────
 Plans/
 scratchpad/
+
+# ─── graphify (overview/working tool — not a repo artifact) ─
+graphify-out/
