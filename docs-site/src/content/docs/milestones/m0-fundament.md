@@ -15,7 +15,8 @@ description: Lauffähiges Skelett, public auf GitHub, von Tag 1.
   SQLModel-Entitäten (Organization, User, Workspace, Membership, ChatSession, ChatMessage) mit durchgängigem `organization_id`/`owner_id`-Scoping (`app/core/scoping.py`), FK-`CASCADE`, `updated_at`-`onupdate`. Alembic eingerichtet (env.py auf SQLModel-Metadaten) + erste Migration generiert & gegen Postgres verifiziert. 5 Tests grün. Code-Review (5 Achsen) durchgeführt, Findings eingearbeitet. Siehe [ADR-0001](/architecture/adr-0001-datenbank/).
 - **T0.4 — Auth: Sessions, 2FA, API-Tokens** ✅
   argon2id-Passwörter, server-seitige (revozierbare) Sessions, TOTP-2FA + Einmal-Backup-Codes, gehashte API-Tokens mit Scopes. HTTP-Endpoints (`/auth/register|login|logout|me|2fa/setup|2fa/enable|tokens`) mit Pydantic-Schemas; Auth-Dependency (Bearer-Token **oder** httponly-Session-Cookie). Alembic-Migration `d5bfeaca19b8`. 18 Tests grün. Secrets nur als Hash gespeichert.
-- **T0.5 — Next.js-PWA-Grundgerüst + Verbindungs-Switch** ⬜
+- **T0.5 — Next.js-PWA-Grundgerüst + Verbindungs-Switch** ✅
+  Next.js 15 (App Router, bun) + Tailwind v4 mit Brand-Theme (Cyan→Blau), PWA-Manifest. **Verbindungs-Switch** Lokal/Remote (konfigurierbare Backend-URL + Live-Health-Check). **i18n-Grundarchitektur** (next-intl, DE default + EN, Cookie-basiert) — keine hardcoded Strings. Build grün; **Sichtprüfung** mit echtem Chrome bestanden (DE + EN, Brand, Offline-Erkennung).
 - **T0.6 — CI + Test-Grundgerüst** ⬜
 
 ## Prinzipien

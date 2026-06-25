@@ -14,7 +14,7 @@ Runnable skeleton: backend + frontend + DB + auth in Docker, public on GitHub fr
 - ✅ Docker Compose: FastAPI + PostgreSQL + pgvector (runnable stack, pytest green)
 - ✅ DB foundation + owner/org scoping (SQLModel + Alembic, migration verified)
 - ✅ Auth: sessions, 2FA (TOTP + backup codes), API tokens (argon2, hashed secrets)
-- ⬜ Next.js PWA skeleton + connection switch
+- ✅ Next.js PWA skeleton + connection switch (+ i18n DE/EN, screenshot-verified)
 - ⬜ CI + test scaffold
 
 ### M1 — Agent Core ⬜
