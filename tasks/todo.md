@@ -2,7 +2,7 @@
 
 ## Phase F — App-Fundament & Shell (NEU, zuerst)
 - [x] **F1** Auth end-to-end (Login/Registrierung/2FA/Logout-UI, eingeloggt bleiben, geschützte Routen) ✅
-- [ ] **F2** App-Shell + Navigation (Sidebar/Topbar/Routing-Hülle)
+- [x] **F2** App-Shell + Navigation (Sidebar/Topbar/Routing-Hülle) ✅
 - [ ] **F3** Settings-Framework (UserSettings-Persistenz + Settings-Seite: Profil/Sprache/Theme/Verbindung)
 - [ ] **F4** Modell-Verwaltung in Settings (ModelEndpoint CRUD, Keys verschlüsselt, modell-agnostisch)
 - [ ] **F5** Chat echt + Sessions + Sidebar (Agent-Loop gegen echtes Modell, Verlauf persistiert)
@@ -17,4 +17,4 @@
 - [ ] M7 Sync/Team
 - [ ] M8 Brand/Launch
 
-**Nächster konkreter Start:** F2 — App-Shell + Navigation.
+**Nächster konkreter Start:** F3 — Settings-Framework.
