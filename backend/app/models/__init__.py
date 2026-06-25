@@ -9,6 +9,7 @@ from app.models.entities import (  # noqa: F401
     Membership,
     Organization,
     User,
+    UserSettings,
     Workspace,
     WorkspaceRole,
 )
@@ -16,6 +17,7 @@ from app.models.entities import (  # noqa: F401
 __all__ = [
     "Organization",
     "User",
+    "UserSettings",
     "Workspace",
     "Membership",
     "WorkspaceRole",

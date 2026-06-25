@@ -86,6 +86,25 @@ class Membership(SQLModel, table=True):
     created_at: datetime = Field(default_factory=utcnow, nullable=False)
 
 
+class UserSettings(SQLModel, table=True):
+    """Per-user preferences (F3). The central settings store everything reads from.
+
+    Owner-scoped: exactly one row per user (user_id unique). Server-side source of
+    truth so preferences survive device switches and can sync later. Extend by adding
+    typed fields here + a migration — the API returns the whole object.
+    """
+
+    __tablename__ = "user_settings"
+
+    id: str = Field(default_factory=gen_id, primary_key=True)
+    user_id: str = Field(foreign_key="users.id", index=True, unique=True, ondelete="CASCADE")
+    language: str = Field(default="de")  # de | en
+    theme: str = Field(default="dark")  # dark | light | system
+    connection_default: str = Field(default="local")  # local | remote
+    created_at: datetime = Field(default_factory=utcnow, nullable=False)
+    updated_at: datetime = Field(default_factory=utcnow, nullable=False, sa_column_kwargs=_UPDATED)
+
+
 class ChatSession(SQLModel, table=True):
     """A chat/agent/research session inside a workspace.
 
