@@ -2,6 +2,7 @@
 
 Importing this package registers all tables on SQLModel.metadata.
 """
+from app.models.auth import ApiToken, AuthSession, BackupCode  # noqa: F401
 from app.models.entities import (  # noqa: F401
     ChatMessage,
     ChatSession,
@@ -20,4 +21,7 @@ __all__ = [
     "WorkspaceRole",
     "ChatSession",
     "ChatMessage",
+    "AuthSession",
+    "ApiToken",
+    "BackupCode",
 ]

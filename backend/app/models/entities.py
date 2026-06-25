@@ -45,6 +45,9 @@ class User(SQLModel, table=True):
     organization_id: str = Field(foreign_key="organizations.id", index=True, ondelete="CASCADE")
     email: str = Field(index=True, unique=True)
     display_name: str
+    password_hash: str = Field(default="")  # argon2id; empty until set
+    totp_secret: str | None = Field(default=None)  # base32 TOTP secret (when 2FA set up)
+    totp_enabled: bool = Field(default=False)
     is_org_admin: bool = Field(default=False)
     is_active: bool = Field(default=True)
     created_at: datetime = Field(default_factory=utcnow, nullable=False)
