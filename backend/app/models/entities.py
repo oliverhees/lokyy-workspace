@@ -152,4 +152,5 @@ class ChatMessage(SQLModel, table=True):
     session_id: str = Field(foreign_key="sessions.id", index=True, ondelete="CASCADE")
     role: str  # user | assistant | system | tool
     content: str
+    model_used: str | None = Field(default=None)  # which model produced an assistant message
     created_at: datetime = Field(default_factory=utcnow, nullable=False)

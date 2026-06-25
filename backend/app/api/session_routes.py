@@ -19,6 +19,8 @@ class SessionOut(BaseModel):
 class MessageOut(BaseModel):
     role: str
     content: str
+    model_used: str | None = None
+    created_at: str
 
 
 class CreateSessionIn(BaseModel):
@@ -47,7 +49,11 @@ def get_messages(session_id: str, db: Session = Depends(get_session),
     if session_service.get_owned_session(db, user_id=user.id, session_id=session_id) is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "session not found")
     msgs = session_service.list_messages(db, user_id=user.id, session_id=session_id)
-    return [MessageOut(role=m.role, content=m.content) for m in msgs]
+    return [
+        MessageOut(role=m.role, content=m.content, model_used=m.model_used,
+                   created_at=m.created_at.isoformat())
+        for m in msgs
+    ]
 
 
 @router.patch("/{session_id}", response_model=SessionOut)

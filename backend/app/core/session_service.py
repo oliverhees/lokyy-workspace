@@ -74,8 +74,9 @@ def list_messages(db: Session, *, user_id: str, session_id: str) -> list[ChatMes
     )
 
 
-def add_message(db: Session, *, session_id: str, role: str, content: str) -> ChatMessage:
-    m = ChatMessage(session_id=session_id, role=role, content=content)
+def add_message(db: Session, *, session_id: str, role: str, content: str,
+                model_used: str | None = None) -> ChatMessage:
+    m = ChatMessage(session_id=session_id, role=role, content=content, model_used=model_used)
     db.add(m)
     # touch the session so it sorts to the top and updated_at reflects activity
     s = db.get(ChatSession, session_id)

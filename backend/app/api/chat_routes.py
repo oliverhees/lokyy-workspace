@@ -42,9 +42,10 @@ async def _hint_stream(text: str) -> AsyncIterator[str]:
     yield "data: [DONE]\n\n"
 
 
-def _persist_assistant(session_id: str, text: str) -> None:
+def _persist_assistant(session_id: str, text: str, model_used: str | None) -> None:
     with Session(engine) as s:
-        session_service.add_message(s, session_id=session_id, role="assistant", content=text)
+        session_service.add_message(s, session_id=session_id, role="assistant",
+                                    content=text, model_used=model_used)
 
 
 async def _llm_stream(history: list[dict], cfg: llm.LLMConfig, session_id: str) -> AsyncIterator[str]:
@@ -56,7 +57,7 @@ async def _llm_stream(history: list[dict], cfg: llm.LLMConfig, session_id: str) 
     except Exception as exc:  # surface a friendly error, never crash the stream
         yield _sse(f"[LLM-Fehler: {exc}]")
     if full:
-        _persist_assistant(session_id, full)
+        _persist_assistant(session_id, full, cfg.model)
     yield "data: [DONE]\n\n"
 
 
