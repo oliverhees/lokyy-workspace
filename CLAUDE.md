@@ -152,3 +152,17 @@ alle Agenten brachen mit 0 Output ab. Daraus die Regeln:
 - **bun/bunx** im Frontend (kein npm/npx), **TypeScript** durchgängig.
 - **Test-driven** wo sinnvoll (RED→GREEN), grüner Build vor jedem Commit.
 - **Doku (Starlight) zu jedem Task** — siehe Direktive 8.
+
+---
+
+## 7. Lokale Dev-Umgebung (Ports & bestehende Dienste)
+
+Auf dem Dev-Rechner laufen bereits andere Lokyy-/Infra-Container (lokyy-brain, lokyy-os,
+hermes, traefik …). Belegt u. a.: **80, 443, 5432, 5433, 8000, 8001**.
+
+- **Unser Stack:** Backend-Host-Port **8008** (Default, via `APP_PORT` konfigurierbar);
+  PostgreSQL ist **intern-only** (kein Host-Mapping → kein Konflikt, sicherer).
+- **Vor jedem Docker-Test freie Ports prüfen** (`ss -tlnH "( sport = :PORT )"`) und den Stack
+  danach mit `docker compose down` stoppen.
+- **Health-Verifikation immer schema-genau** (`/health` muss `version` enthalten) — sonst droht
+  ein False Positive durch einen fremden Dienst auf demselben Port (genau das ist bei T0.2 passiert).
