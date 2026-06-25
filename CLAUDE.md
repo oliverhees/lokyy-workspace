@@ -160,6 +160,7 @@ alle Agenten brachen mit 0 Output ab. Daraus die Regeln:
   `field_validator`/`model_validator` & `computed_field` wo sinnvoll; Pydantic für **strukturierte
   LLM-Outputs** (Tool-Calls/Agent-Antworten validieren statt roh parsen).
 - **bun/bunx** im Frontend (kein npm/npx), **TypeScript** durchgängig.
+- **Next.js immer auf der neuesten Stable-Version** halten (aktuell 16.x).
 - **Test-driven** wo sinnvoll (RED→GREEN), grüner Build vor jedem Commit.
 - **Mehr Commits in kleineren Schritten:** atomare Commits pro logischem Schritt (Modelle,
   Migration, Tests, Doku je eigener Commit), nicht ein Riesen-Commit pro Task. Aussagekräftige Messages.
