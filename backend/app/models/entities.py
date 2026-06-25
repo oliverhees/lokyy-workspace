@@ -12,7 +12,18 @@ import uuid
 from datetime import datetime, timezone
 from enum import Enum
 
+from pgvector.sqlalchemy import Vector
+from sqlalchemy import JSON, Column
 from sqlmodel import Field, SQLModel
+
+# Embedding dimension (matches the default multilingual model, 384). Changing the
+# model means a re-embed + migration.
+EMBEDDING_DIM = 384
+
+
+def _embedding_column() -> Column:
+    # pgvector Vector in Postgres, JSON list in SQLite (so tests run without pgvector)
+    return Column(Vector(EMBEDDING_DIM).with_variant(JSON(), "sqlite"))
 
 
 def gen_id() -> str:
@@ -142,6 +153,24 @@ class AgentContext(SQLModel, table=True):
     user_profile: str = Field(default="")  # what the agent knows about the user (Markdown)
     created_at: datetime = Field(default_factory=utcnow, nullable=False)
     updated_at: datetime = Field(default_factory=utcnow, nullable=False, sa_column_kwargs=_UPDATED)
+
+
+class MemoryItem(SQLModel, table=True):
+    """A piece of long-term memory (M2.2): an embedded snippet the agent can recall.
+
+    Owner-scoped via workspace. `embedding` is a pgvector column in Postgres (cosine
+    search) and a JSON list in SQLite (tests use Python cosine). `kind` lets later
+    slices distinguish raw messages from extracted facts (M2.3).
+    """
+
+    __tablename__ = "memory_items"
+
+    id: str = Field(default_factory=gen_id, primary_key=True)
+    workspace_id: str = Field(foreign_key="workspaces.id", index=True, ondelete="CASCADE")
+    kind: str = Field(default="message")  # message | fact | note
+    content: str
+    embedding: list[float] = Field(default=None, sa_column=_embedding_column())
+    created_at: datetime = Field(default_factory=utcnow, nullable=False)
 
 
 class ChatSession(SQLModel, table=True):

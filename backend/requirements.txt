@@ -11,3 +11,5 @@ argon2-cffi>=23.1
 pyotp>=2.9
 cryptography>=43
 litellm>=1.89
+pgvector>=0.3
+fastembed>=0.4

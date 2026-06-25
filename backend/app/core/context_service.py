@@ -47,10 +47,11 @@ def update_context(
     return ctx
 
 
-def assemble_system_prompt(ctx: AgentContext) -> str:
+def assemble_system_prompt(ctx: AgentContext, *, memories: list[str] | None = None) -> str:
     """Build the system prompt from the workspace context. Empty sections are skipped.
 
-    Extension point for M2: memory snippets and Telos get appended here later.
+    `memories` (M2.2): relevant recalled snippets, appended as their own section.
+    Telos (M2.4) will append a further section here.
     """
     parts: list[str] = []
     soul = (ctx.soul or "").strip()
@@ -58,4 +59,7 @@ def assemble_system_prompt(ctx: AgentContext) -> str:
     parts.append(soul or DEFAULT_SOUL)
     if profile:
         parts.append("# Was du über den Nutzer weißt\n" + profile)
+    if memories:
+        bullets = "\n".join(f"- {m}" for m in memories)
+        parts.append("# Relevante Erinnerungen aus früheren Gesprächen\n" + bullets)
     return "\n\n".join(parts)

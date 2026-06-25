@@ -40,6 +40,13 @@ class Settings(BaseSettings):
     llm_model: str = Field(default="")
     llm_api_key: str = Field(default="")
 
+    # Embeddings for memory (M2.2). Pluggable: local (fastembed, offline/DSGVO) by
+    # default, cloud (LiteLLM) optional. Dim must match the chosen model.
+    embedding_provider: str = Field(default="local")  # local | cloud
+    embedding_model_local: str = Field(default="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+    embedding_model_cloud: str = Field(default="text-embedding-3-small")
+    embedding_dim: int = Field(default=384)
+
     # CORS — the PWA talks cross-origin to the backend (local/remote switch)
     allowed_origins: str = Field(default="http://localhost:3000,http://localhost:3008")
 

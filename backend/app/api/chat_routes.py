@@ -22,7 +22,7 @@ from pydantic import BaseModel
 from sqlmodel import Session
 
 from app.api.deps import get_current_user
-from app.core import context_service, llm, model_service, session_service, ssrf
+from app.core import context_service, llm, memory_service, model_service, session_service, ssrf
 from app.core.config import get_settings
 from app.core.db import engine, get_session
 from app.models.entities import User
@@ -79,9 +79,19 @@ async def chat(body: ChatIn, db: Session = Depends(get_session),
     session_service.add_message(db, session_id=session.id, role="user", content=body.content)
     session_service.maybe_autotitle(db, session=session, first_user_message=body.content)
 
-    # M2.1: prepend the assembled system prompt (persona + user profile) for this workspace.
+    # M2.1/M2.2: system prompt = persona + profile + recalled memories for this workspace.
     ctx = context_service.get_or_create_context(db, workspace_id=session.workspace_id)
-    system_prompt = context_service.assemble_system_prompt(ctx)
+    memories: list[str] = []
+    try:
+        recalled = memory_service.search_memories(
+            db, workspace_id=session.workspace_id, query=body.content, k=4
+        )
+        memories = [m.content for m in recalled]
+        # remember the user's message for future recall (M2.3 will refine to facts)
+        memory_service.add_memory(db, workspace_id=session.workspace_id, content=body.content)
+    except Exception:  # memory must never break the chat
+        log.exception("memory recall/store failed for session %s", session.id)
+    system_prompt = context_service.assemble_system_prompt(ctx, memories=memories)
     history: list[dict] = [{"role": "system", "content": system_prompt}]
     history += [
         {"role": m.role, "content": m.content}
