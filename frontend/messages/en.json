@@ -2,7 +2,16 @@
   "app": {
     "badge": "AI Operating System",
     "tagline": "The self-hosted AI operating system for the self-employed & SMEs. Privacy-first, local or on your own server.",
+    "openChat": "Open chat",
     "beta": "Beta · Build in Public · in development"
+  },
+  "chat": {
+    "placeholder": "Type a message …",
+    "send": "Send",
+    "empty": "Ask a question or describe what you want to get done. Lokyy answers straight from your workspace.",
+    "emptyTitle": "Welcome to lokyy",
+    "error": "Could not reach the backend. Is the server running? Please try again in a moment.",
+    "echoPrefix": "Echo:"
   },
   "conn": {
     "local": "Local",

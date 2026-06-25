@@ -2,7 +2,16 @@
   "app": {
     "badge": "KI-Betriebssystem",
     "tagline": "Das self-hosted KI-Betriebssystem für Selbstständige & KMU. Datenschutz zuerst, lokal oder auf dem eigenen Server.",
+    "openChat": "Chat öffnen",
     "beta": "Beta · Build in Public · in Entwicklung"
+  },
+  "chat": {
+    "placeholder": "Schreib eine Nachricht …",
+    "send": "Senden",
+    "empty": "Stell eine Frage oder beschreibe, was du erledigen willst. Lokyy antwortet direkt aus deinem Workspace.",
+    "emptyTitle": "Willkommen im lokyy",
+    "error": "Verbindung zum Backend fehlgeschlagen. Läuft der Server? Versuch es gleich noch einmal.",
+    "echoPrefix": "Echo:"
   },
   "conn": {
     "local": "Lokal",
