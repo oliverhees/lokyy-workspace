@@ -70,6 +70,11 @@
     "delete": "Löschen",
     "save": "Speichern",
     "cancel": "Abbrechen",
+    "loadModels": "Modelle laden",
+    "loadingModels": "Lädt…",
+    "modelsFound": "{count} Modelle geladen — im Feld auswählen oder tippen.",
+    "noModelsFound": "Keine Modelle gefunden. Modell-ID manuell eingeben.",
+    "discoverError": "Modelle konnten nicht geladen werden.",
     "loadError": "Modelle konnten nicht geladen werden.",
     "saveError": "Speichern fehlgeschlagen. Bitte erneut versuchen."
   },

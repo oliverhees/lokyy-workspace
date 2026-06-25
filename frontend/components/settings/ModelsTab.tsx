@@ -13,6 +13,7 @@ import {
   type Provider,
   createModel,
   deleteModel,
+  discoverModels,
   listModels,
   setDefaultModel,
   updateModel,
@@ -38,6 +39,8 @@ export function ModelsTab() {
   const [form, setForm] = useState<ModelInput>(emptyForm);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [discovered, setDiscovered] = useState<string[]>([]);
+  const [discovering, setDiscovering] = useState(false);
 
   async function reload() {
     try {
@@ -56,12 +59,14 @@ export function ModelsTab() {
     // default to the first preset (OpenRouter) so the base URL is prefilled
     const p = PROVIDER_PRESETS[0];
     setForm({ ...emptyForm, provider: p.id, base_url: p.baseUrl });
+    setDiscovered([]);
     setEditing("new");
     setError(null);
   }
 
   function pickProvider(id: string) {
     const p = presetFor(id);
+    setDiscovered([]); // model list depends on the provider
     // prefill base URL from the preset, but don't clobber a URL the user typed
     setForm((f) => ({
       ...f,
@@ -72,9 +77,28 @@ export function ModelsTab() {
     }));
   }
 
+  async function loadModels() {
+    setDiscovering(true);
+    setError(null);
+    try {
+      const models = await discoverModels({
+        provider: form.provider,
+        base_url: form.base_url,
+        api_key: form.api_key,
+      });
+      setDiscovered(models);
+      if (models.length === 0) setError(t("noModelsFound"));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("discoverError"));
+    } finally {
+      setDiscovering(false);
+    }
+  }
+
   function startEdit(ep: ModelEndpoint) {
     // key stays blank — only sent if the user types a new one
     setForm({ name: ep.name, provider: ep.provider, base_url: ep.base_url, model: ep.model, api_key: "" });
+    setDiscovered([]);
     setEditing(ep.id);
     setError(null);
   }
@@ -126,12 +150,37 @@ export function ModelsTab() {
         </select>
         <input className={fieldClass} placeholder={t("baseUrl")} value={form.base_url}
                onChange={(e) => setForm({ ...form, base_url: e.target.value })} />
-        <input className={fieldClass} placeholder={presetFor(form.provider)?.modelHint ?? t("model")}
-               value={form.model}
-               onChange={(e) => setForm({ ...form, model: e.target.value })} />
         <input className={fieldClass} type="password" autoComplete="off"
                placeholder={editing === "new" ? t("apiKey") : t("apiKeyKeep")} value={form.api_key}
                onChange={(e) => setForm({ ...form, api_key: e.target.value })} />
+
+        <div className="flex items-center gap-2">
+          <input
+            className={fieldClass}
+            list="discovered-models"
+            placeholder={presetFor(form.provider)?.modelHint ?? t("model")}
+            value={form.model}
+            onChange={(e) => setForm({ ...form, model: e.target.value })}
+          />
+          {form.base_url && (
+            <button
+              type="button"
+              onClick={loadModels}
+              disabled={discovering}
+              className="shrink-0 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium disabled:opacity-50 dark:border-slate-700"
+            >
+              {discovering ? t("loadingModels") : t("loadModels")}
+            </button>
+          )}
+          <datalist id="discovered-models">
+            {discovered.map((m) => (
+              <option key={m} value={m} />
+            ))}
+          </datalist>
+        </div>
+        {discovered.length > 0 && (
+          <p className="text-xs text-slate-400">{t("modelsFound", { count: discovered.length })}</p>
+        )}
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 

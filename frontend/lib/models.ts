@@ -71,3 +71,23 @@ export async function deleteModel(id: string): Promise<void> {
   const res = await apiFetch(`/models/${id}`, { method: "DELETE" });
   if (!res.ok && res.status !== 204) throw new Error(`model delete failed: ${res.status}`);
 }
+
+export interface DiscoverInput {
+  provider: Provider;
+  base_url: string;
+  api_key?: string;
+}
+
+/** Fetch the provider's available model ids (e.g. OpenRouter). Key is not stored. */
+export async function discoverModels(input: DiscoverInput): Promise<string[]> {
+  const res = await apiFetch("/models/discover", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    const data = (await res.json().catch(() => ({}))) as { detail?: string };
+    throw new Error(data.detail || `discover failed: ${res.status}`);
+  }
+  return ((await res.json()) as { models: string[] }).models;
+}
