@@ -28,7 +28,8 @@ def test_build_kwargs_custom_uses_openai_path_with_base_url():
     kw = llm.build_kwargs(cfg, [], stream=False)
     assert kw["model"] == "openai/local-llm"
     assert kw["api_base"] == "http://localhost:8080/v1"
-    assert "api_key" not in kw  # none configured (e.g. local)
+    # local OpenAI-compatible endpoints get a harmless placeholder key (LiteLLM requires one)
+    assert kw["api_key"] == "sk-no-key-required"
 
 
 def test_detect_provider():

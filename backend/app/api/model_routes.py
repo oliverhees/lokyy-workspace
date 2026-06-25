@@ -3,6 +3,7 @@
 Responses expose `has_api_key` (bool) only — the plaintext key is never returned.
 The current user comes from the auth dependency, so every operation is owner-scoped.
 """
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field, field_validator
 from sqlmodel import Session
@@ -59,6 +60,21 @@ class ModelUpdateIn(BaseModel):
         return _check_provider(v)
 
 
+class DiscoverIn(BaseModel):
+    provider: str
+    base_url: str = ""
+    api_key: str = ""
+
+    @field_validator("provider")
+    @classmethod
+    def _check(cls, v: str) -> str:
+        return _check_provider(v)  # type: ignore[return-value]
+
+
+class DiscoverOut(BaseModel):
+    models: list[str]
+
+
 def _out(ep: ModelEndpoint) -> ModelOut:
     return ModelOut(
         id=ep.id, name=ep.name, provider=ep.provider, base_url=ep.base_url,
@@ -69,6 +85,44 @@ def _out(ep: ModelEndpoint) -> ModelOut:
 @router.get("", response_model=list[ModelOut])
 def list_models(db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> list[ModelOut]:
     return [_out(e) for e in model_service.list_endpoints(db, user_id=user.id)]
+
+
+@router.post("/discover", response_model=DiscoverOut)
+async def discover_models(body: DiscoverIn, user: User = Depends(get_current_user)) -> DiscoverOut:
+    """Fetch the provider's available model ids via its OpenAI-compatible /models endpoint.
+
+    The key is used only for this call and never stored. Needs a base_url (native
+    providers without one fall back to manual entry).
+    """
+    base = body.base_url.strip()
+    if not base:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "Für diesen Anbieter ist keine automatische Modell-Liste verfügbar — "
+            "bitte die Modell-ID manuell eingeben.",
+        )
+    url = base.rstrip("/") + "/models"
+    headers = {"Authorization": f"Bearer {body.api_key}"} if body.api_key else {}
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.get(url, headers=headers)
+            resp.raise_for_status()
+            data = resp.json()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"Anbieter antwortete mit {e.response.status_code} — API-Key prüfen?",
+        )
+    except Exception:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "Modelle konnten nicht geladen werden — Base-URL/Verbindung prüfen.",
+        )
+    items = data.get("data") if isinstance(data, dict) else data
+    ids = sorted({
+        m["id"] for m in (items or []) if isinstance(m, dict) and isinstance(m.get("id"), str)
+    })
+    return DiscoverOut(models=ids)
 
 
 @router.post("", response_model=ModelOut, status_code=status.HTTP_201_CREATED)

@@ -44,6 +44,20 @@ def test_models_requires_auth():
     assert client.get("/models").status_code == 401
 
 
+def test_discover_requires_auth():
+    assert client.post("/models/discover", json={"provider": "openrouter"}).status_code == 401
+
+
+def test_discover_without_base_url_is_rejected():
+    app.dependency_overrides[get_current_user] = _current_user_override
+    try:
+        # native providers (no base_url) → manual entry, friendly 400
+        r = client.post("/models/discover", json={"provider": "anthropic", "base_url": ""})
+        assert r.status_code == 400
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
 def test_models_crud_and_key_never_returned():
     app.dependency_overrides[get_current_user] = _current_user_override
     try:
