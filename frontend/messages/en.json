@@ -11,7 +11,10 @@
     "empty": "Ask a question or describe what you want to get done. Lokyy answers straight from your workspace.",
     "emptyTitle": "Welcome to lokyy",
     "error": "Could not reach the backend. Is the server running? Please try again in a moment.",
-    "echoPrefix": "Echo:"
+    "echoPrefix": "Echo:",
+    "newChat": "New chat",
+    "noConversations": "No conversations yet.",
+    "delete": "Delete"
   },
   "conn": {
     "local": "Local",

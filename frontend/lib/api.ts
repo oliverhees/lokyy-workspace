@@ -31,23 +31,24 @@ export interface ChatMessage {
 }
 
 export interface ChatStreamOptions {
-  messages: ChatMessage[];
+  sessionId: string;
+  content: string;
   signal?: AbortSignal;
   /** Called for every text delta as it arrives. */
   onDelta: (delta: string) => void;
 }
 
 /**
- * Streams an assistant reply from the backend `/chat` endpoint.
- * Throws if the connection fails or the server responds with a non-OK status
- * — callers should catch and surface a friendly hint (no crash).
+ * Streams an assistant reply from the backend `/chat` endpoint into a session.
+ * The message is persisted server-side. Throws if the connection fails or the
+ * server responds with a non-OK status — callers should catch and surface a hint.
  */
-export async function streamChat({ messages, signal, onDelta }: ChatStreamOptions): Promise<void> {
+export async function streamChat({ sessionId, content, signal, onDelta }: ChatStreamOptions): Promise<void> {
   const res = await fetch(getApiBase() + "/chat", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ session_id: sessionId, content }),
     signal,
   });
 

@@ -1,24 +1,34 @@
 "use client";
 
+// F5 — chat bound to a persisted session. Loads the session's history, streams the
+// assistant reply from the real model, and the backend persists both messages.
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { streamChat, type ChatMessage } from "@/lib/api";
+import { getMessages } from "@/lib/sessions";
 import { ChatInput } from "./ChatInput";
 import { EmptyState } from "./EmptyState";
 import { MessageBubble } from "./MessageBubble";
 
-// Optional local echo fallback for visual checks while the backend `/chat`
-// endpoint does not exist yet. Off by default; enable with
-// NEXT_PUBLIC_CHAT_ECHO=1 in the environment.
-const ECHO_FALLBACK = process.env.NEXT_PUBLIC_CHAT_ECHO === "1";
-
-export function Chat() {
+export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?: () => void }) {
   const t = useTranslations("chat");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Load the session's persisted history whenever the active session changes.
+  useEffect(() => {
+    let active = true;
+    setError(null);
+    getMessages(sessionId)
+      .then((m) => active && setMessages(m))
+      .catch(() => active && setMessages([]));
+    return () => {
+      active = false;
+    };
+  }, [sessionId]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -27,7 +37,6 @@ export function Chat() {
   async function send(text: string) {
     setError(null);
     const history: ChatMessage[] = [...messages, { role: "user", content: text }];
-    // Append the user message + an empty assistant placeholder we stream into.
     setMessages([...history, { role: "assistant", content: "" }]);
     setStreaming(true);
 
@@ -42,25 +51,16 @@ export function Chat() {
       });
 
     try {
-      await streamChat({ messages: history, onDelta: appendDelta });
+      await streamChat({ sessionId, content: text, onDelta: appendDelta });
+      onActivity?.(); // title may have been set from the first message
     } catch {
-      if (ECHO_FALLBACK) {
-        // Simple local echo so the UI can be visually verified offline.
-        const reply = `${t("echoPrefix")} ${text}`;
-        for (const ch of reply) {
-          appendDelta(ch);
-          await new Promise((r) => setTimeout(r, 12));
-        }
-      } else {
-        setError(t("error"));
-        // Drop the empty assistant placeholder on failure.
-        setMessages((prev) => {
-          const next = [...prev];
-          const last = next[next.length - 1];
-          if (last && last.role === "assistant" && last.content === "") next.pop();
-          return next;
-        });
-      }
+      setError(t("error"));
+      setMessages((prev) => {
+        const next = [...prev];
+        const last = next[next.length - 1];
+        if (last && last.role === "assistant" && last.content === "") next.pop();
+        return next;
+      });
     } finally {
       setStreaming(false);
     }

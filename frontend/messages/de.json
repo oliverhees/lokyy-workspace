@@ -11,7 +11,10 @@
     "empty": "Stell eine Frage oder beschreibe, was du erledigen willst. Lokyy antwortet direkt aus deinem Workspace.",
     "emptyTitle": "Willkommen im lokyy",
     "error": "Verbindung zum Backend fehlgeschlagen. Läuft der Server? Versuch es gleich noch einmal.",
-    "echoPrefix": "Echo:"
+    "echoPrefix": "Echo:",
+    "newChat": "Neuer Chat",
+    "noConversations": "Noch keine Unterhaltungen.",
+    "delete": "Löschen"
   },
   "conn": {
     "local": "Lokal",
