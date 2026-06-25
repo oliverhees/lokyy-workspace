@@ -57,3 +57,6 @@ scratchpad/
 
 # ─── graphify (overview/working tool — not a repo artifact) ─
 graphify-out/
+
+# Lokale Verifizierungs-Screenshots (nicht versionieren)
+scratchpad-shots/
