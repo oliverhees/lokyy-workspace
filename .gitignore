@@ -34,6 +34,7 @@ build/
 # ─── Node / Next.js / Astro ────────────────────────────────
 node_modules/
 .next/
+next-env.d.ts
 out/
 .astro/
 .turbo/
