@@ -19,6 +19,7 @@ import {
   updateModel,
 } from "@/lib/models";
 import { PROVIDER_PRESETS, presetFor } from "@/lib/providers";
+import { ModelCombobox } from "./ModelCombobox";
 
 const fieldClass =
   "w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30 dark:border-slate-700 dark:bg-slate-900";
@@ -154,13 +155,12 @@ export function ModelsTab() {
                placeholder={editing === "new" ? t("apiKey") : t("apiKeyKeep")} value={form.api_key}
                onChange={(e) => setForm({ ...form, api_key: e.target.value })} />
 
-        <div className="flex items-center gap-2">
-          <input
-            className={fieldClass}
-            list="discovered-models"
-            placeholder={presetFor(form.provider)?.modelHint ?? t("model")}
+        <div className="flex items-start gap-2">
+          <ModelCombobox
             value={form.model}
-            onChange={(e) => setForm({ ...form, model: e.target.value })}
+            onChange={(m) => setForm({ ...form, model: m })}
+            options={discovered}
+            placeholder={presetFor(form.provider)?.modelHint ?? t("model")}
           />
           {form.base_url && (
             <button
@@ -172,11 +172,6 @@ export function ModelsTab() {
               {discovering ? t("loadingModels") : t("loadModels")}
             </button>
           )}
-          <datalist id="discovered-models">
-            {discovered.map((m) => (
-              <option key={m} value={m} />
-            ))}
-          </datalist>
         </div>
         {discovered.length > 0 && (
           <p className="text-xs text-slate-400">{t("modelsFound", { count: discovered.length })}</p>
