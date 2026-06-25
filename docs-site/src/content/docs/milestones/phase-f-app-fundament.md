@@ -25,6 +25,14 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   **Verifiziert (Chrome, SQLite-Dev-DB):** Registrierung → Auto-Login → `/chat`,
   Reload bleibt eingeloggt, Logout → `/login`, `/chat` ausgeloggt → Redirect auf
   `/login`, Login mit Bestandskonto → `/chat`. Backend +1 Test (49 grün). Konsole sauber.
+- **F1.1 — Dedizierte Dev-Postgres (Docker)** ✅
+  Folge-Task aus F1: eigene Dev-Postgres statt der belegten Fremd-Infra. Die Produktiv-DB
+  bleibt **internal-only**; ein explizites Dev-Override (`docker-compose.dev.yml`) mappt die
+  DB auf den freien Host-Port **5435**, damit das Host-Backend (Hot-Reload) sie erreicht.
+  Lokale `.env` (gitignored) mit `DATABASE_URL`, Schema via **Alembic-Migrationen**
+  (`alembic upgrade head`, nicht `init_db`). **Verifiziert:** Signup/Login E2E grün gegen
+  echtes Postgres (Daten in `users`/`organizations` geprüft), UI-Login bestätigt.
+  Start: `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db`.
 - **F2 — App-Shell + Navigation** ⏳
   Authentifizierte Layout-Hülle: Sidebar (Menüpunkte), Topbar (User-Menü,
   Connection-Switch, Sprache), Routing-Gruppe. Hülle, in die alle Features einhängen.
@@ -39,7 +47,9 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
 
 ## Notizen
 
-- **F1-DB beim Verifizieren:** Die E2E-Sichtprüfung lief gegen eine lokale **SQLite-Dev-DB**
-  (echtes HTTP, echte DB-Writes, echte Session-Cookies). Der PostgreSQL-Pfad ist durch die
-  Alembic-Migrationen und die Unit-Tests abgedeckt. Eine dedizierte Dev-Postgres-Instanz
-  (statt der belegten Fremd-Infra auf Port 5432) ist ein eigener, kleiner Folge-Task.
+- **Lokale DB:** Dev läuft jetzt (seit F1.1) gegen eine **dedizierte Docker-Dev-Postgres**
+  auf Host-Port 5435 (`docker-compose.dev.yml`). Die Produktiv-DB bleibt internal-only.
+  Ports 5432–5434 sind auf der Dev-Maschine durch andere Infra belegt — daher 5435.
+- **Unit-Tests** laufen weiterhin gegen In-Memory-SQLite (schnell, ohne DB-Abhängigkeit);
+  der produktionsnahe Postgres-Pfad ist durch die Alembic-Migrationen + die E2E-Verifizierung
+  abgedeckt.
