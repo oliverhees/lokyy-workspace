@@ -64,7 +64,10 @@ def test_chat_streams_and_persists(monkeypatch):
     app.dependency_overrides[get_current_user] = _cu
     monkeypatch.setattr(chat_routes, "engine", _eng)  # persist into the test DB
 
+    seen = {}
+
     async def fake_stream(history, cfg):
+        seen["history"] = history
         for d in ["Hal", "lo"]:
             yield d
 
@@ -85,6 +88,9 @@ def test_chat_streams_and_persists(monkeypatch):
         by_role = {m.role: m.content for m in msgs}
         assert by_role.get("user") == "hallo"
         assert by_role.get("assistant") == "Hallo"  # accumulated from deltas
+        # M2.1: the system prompt (persona) is prepended to what the model sees
+        assert seen["history"][0]["role"] == "system"
+        assert "Lokyy" in seen["history"][0]["content"]
     finally:
         app.dependency_overrides.pop(get_current_user, None)
 

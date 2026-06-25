@@ -127,6 +127,23 @@ class ModelEndpoint(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=utcnow, nullable=False, sa_column_kwargs=_UPDATED)
 
 
+class AgentContext(SQLModel, table=True):
+    """Per-workspace learning context (M2.1): the agent's persona (soul) and what it
+    knows about the user (user_profile), as Markdown. The Context-Assembler turns
+    these into the chat system prompt. One row per workspace; Telos/memory hang off
+    the same workspace later (M2.2/M2.4).
+    """
+
+    __tablename__ = "agent_contexts"
+
+    id: str = Field(default_factory=gen_id, primary_key=True)
+    workspace_id: str = Field(foreign_key="workspaces.id", index=True, unique=True, ondelete="CASCADE")
+    soul: str = Field(default="")  # persona / behaviour (Markdown)
+    user_profile: str = Field(default="")  # what the agent knows about the user (Markdown)
+    created_at: datetime = Field(default_factory=utcnow, nullable=False)
+    updated_at: datetime = Field(default_factory=utcnow, nullable=False, sa_column_kwargs=_UPDATED)
+
+
 class ChatSession(SQLModel, table=True):
     """A chat/agent/research session inside a workspace.
 

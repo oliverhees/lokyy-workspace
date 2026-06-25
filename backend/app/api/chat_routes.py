@@ -22,7 +22,7 @@ from pydantic import BaseModel
 from sqlmodel import Session
 
 from app.api.deps import get_current_user
-from app.core import llm, model_service, session_service, ssrf
+from app.core import context_service, llm, model_service, session_service, ssrf
 from app.core.config import get_settings
 from app.core.db import engine, get_session
 from app.models.entities import User
@@ -79,7 +79,11 @@ async def chat(body: ChatIn, db: Session = Depends(get_session),
     session_service.add_message(db, session_id=session.id, role="user", content=body.content)
     session_service.maybe_autotitle(db, session=session, first_user_message=body.content)
 
-    history = [
+    # M2.1: prepend the assembled system prompt (persona + user profile) for this workspace.
+    ctx = context_service.get_or_create_context(db, workspace_id=session.workspace_id)
+    system_prompt = context_service.assemble_system_prompt(ctx)
+    history: list[dict] = [{"role": "system", "content": system_prompt}]
+    history += [
         {"role": m.role, "content": m.content}
         for m in session_service.list_messages(db, user_id=user.id, session_id=session.id)
     ]

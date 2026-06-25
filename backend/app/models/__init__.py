@@ -4,6 +4,7 @@ Importing this package registers all tables on SQLModel.metadata.
 """
 from app.models.auth import ApiToken, AuthSession, BackupCode  # noqa: F401
 from app.models.entities import (  # noqa: F401
+    AgentContext,
     ChatMessage,
     ChatSession,
     Membership,
@@ -16,6 +17,7 @@ from app.models.entities import (  # noqa: F401
 )
 
 __all__ = [
+    "AgentContext",
     "Organization",
     "User",
     "UserSettings",
