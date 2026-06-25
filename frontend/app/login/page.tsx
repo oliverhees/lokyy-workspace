@@ -143,7 +143,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={busy}
-              className="grad w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50"
+              className="grad w-full rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50"
             >
               {busy ? t("pleaseWait") : mode === "signup" ? t("signupCta") : t("loginCta")}
             </button>

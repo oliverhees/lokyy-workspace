@@ -1,7 +1,7 @@
 "use client";
 
-// F3 — Settings page. The central place every preference is managed. Sections are
-// independent and easy to extend (F4 adds a "Modelle" section here). Preferences
+// F3 / F3.1 — Settings page with in-page tab navigation. Each tab is a section
+// (profile, appearance, connection); F4 adds a "models" tab here. Preferences
 // persist server-side (source of truth) and apply on the client immediately.
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -20,16 +20,10 @@ import {
 import { applyTheme, storeTheme } from "@/lib/theme";
 
 const fieldClass =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30 dark:border-slate-700 dark:bg-slate-900";
+  "w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30 dark:border-slate-700 dark:bg-slate-900";
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
-      <h2 className="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-200">{title}</h2>
-      <div className="space-y-4">{children}</div>
-    </section>
-  );
-}
+const TABS = ["profile", "appearance", "connection"] as const;
+type Tab = (typeof TABS)[number];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -44,6 +38,7 @@ export default function SettingsPage() {
   const t = useTranslations("settings");
   const { refresh } = useAuth();
 
+  const [tab, setTab] = useState<Tab>("profile");
   const [data, setData] = useState<Settings | null>(null);
   const [name, setName] = useState("");
   const [savingName, setSavingName] = useState(false);
@@ -130,61 +125,90 @@ export default function SettingsPage() {
         {savedHint && <span className="text-xs font-medium text-emerald-500">{savedHint}</span>}
       </div>
 
-      <Section title={t("profile")}>
-        <Row label={t("displayName")}>
-          <div className="flex gap-2">
-            <input className={fieldClass} value={name} onChange={(e) => setName(e.target.value)} />
+      {/* Tab navigation */}
+      <div className="flex gap-1 border-b border-slate-200 dark:border-slate-800">
+        {TABS.map((key) => {
+          const active = tab === key;
+          return (
             <button
+              key={key}
               type="button"
-              onClick={saveName}
-              disabled={savingName || name.trim() === data.display_name || !name.trim()}
-              className="grad shrink-0 rounded-lg px-3 py-2 text-sm font-semibold text-white disabled:opacity-40"
+              onClick={() => setTab(key)}
+              aria-current={active ? "page" : undefined}
+              className={`-mb-px border-b-2 px-3 py-2 text-sm font-medium transition ${
+                active
+                  ? "border-brand-blue text-brand-blue"
+                  : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+              }`}
             >
-              {t("save")}
+              {t(key)}
             </button>
-          </div>
-        </Row>
-        <Row label={t("email")}>
-          <input className={`${fieldClass} opacity-60`} value={data.email} readOnly />
-        </Row>
-      </Section>
+          );
+        })}
+      </div>
 
-      <Section title={t("appearance")}>
-        <Row label={t("language")}>
-          <select
-            className={fieldClass}
-            value={data.language}
-            onChange={(e) => changeLanguage(e.target.value as Language)}
-          >
-            <option value="de">Deutsch</option>
-            <option value="en">English</option>
-          </select>
-        </Row>
-        <Row label={t("theme")}>
-          <select
-            className={fieldClass}
-            value={data.theme}
-            onChange={(e) => changeTheme(e.target.value as Theme)}
-          >
-            <option value="dark">{t("themeDark")}</option>
-            <option value="light">{t("themeLight")}</option>
-            <option value="system">{t("themeSystem")}</option>
-          </select>
-        </Row>
-      </Section>
+      {/* Tab panels */}
+      <div className="space-y-4">
+        {tab === "profile" && (
+          <>
+            <Row label={t("displayName")}>
+              <div className="flex gap-2">
+                <input className={fieldClass} value={name} onChange={(e) => setName(e.target.value)} />
+                <button
+                  type="button"
+                  onClick={saveName}
+                  disabled={savingName || name.trim() === data.display_name || !name.trim()}
+                  className="grad shrink-0 rounded-lg px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-40"
+                >
+                  {t("save")}
+                </button>
+              </div>
+            </Row>
+            <Row label={t("email")}>
+              <input className={`${fieldClass} opacity-60`} value={data.email} readOnly />
+            </Row>
+          </>
+        )}
 
-      <Section title={t("connection")}>
-        <Row label={t("connectionDefault")}>
-          <select
-            className={fieldClass}
-            value={data.connection_default}
-            onChange={(e) => changeConnection(e.target.value as ConnectionDefault)}
-          >
-            <option value="local">{t("connLocal")}</option>
-            <option value="remote">{t("connRemote")}</option>
-          </select>
-        </Row>
-      </Section>
+        {tab === "appearance" && (
+          <>
+            <Row label={t("language")}>
+              <select
+                className={fieldClass}
+                value={data.language}
+                onChange={(e) => changeLanguage(e.target.value as Language)}
+              >
+                <option value="de">Deutsch</option>
+                <option value="en">English</option>
+              </select>
+            </Row>
+            <Row label={t("theme")}>
+              <select
+                className={fieldClass}
+                value={data.theme}
+                onChange={(e) => changeTheme(e.target.value as Theme)}
+              >
+                <option value="dark">{t("themeDark")}</option>
+                <option value="light">{t("themeLight")}</option>
+                <option value="system">{t("themeSystem")}</option>
+              </select>
+            </Row>
+          </>
+        )}
+
+        {tab === "connection" && (
+          <Row label={t("connectionDefault")}>
+            <select
+              className={fieldClass}
+              value={data.connection_default}
+              onChange={(e) => changeConnection(e.target.value as ConnectionDefault)}
+            >
+              <option value="local">{t("connLocal")}</option>
+              <option value="remote">{t("connRemote")}</option>
+            </select>
+          </Row>
+        )}
+      </div>
 
       {error && <p className="text-sm text-red-500">{error}</p>}
     </div>

@@ -33,7 +33,7 @@ export default function Home() {
         <p className="max-w-md text-slate-500 dark:text-slate-400">{t("tagline")}</p>
         <Link
           href="/chat"
-          className="grad rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+          className="grad rounded-xl px-5 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
         >
           {t("openChat")}
         </Link>
