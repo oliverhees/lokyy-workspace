@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Class-based dark mode (F3): `dark:` variants follow the `.dark` class on <html>
+   (set by the theme switcher / anti-FOUC script), not the OS preference. This is
+   what makes the light/dark setting actually take effect. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Lokyy brand theme — derived from the logo (Cyan → Blue gradient).
    See docs/KONZEPT.md (K13) and docs/mockups/. */
 @theme {

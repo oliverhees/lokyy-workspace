@@ -58,7 +58,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { key: "chat", href: "/chat", available: true, Icon: ChatIcon },
   { key: "dashboard", href: "/dashboard", available: false, Icon: DashboardIcon },
-  { key: "settings", href: "/settings", available: false, Icon: SettingsIcon },
+  { key: "settings", href: "/settings", available: true, Icon: SettingsIcon },
 ];
 
 export function Sidebar() {

@@ -29,6 +29,26 @@
     "soon": "soon",
     "comingSoon": "Coming soon"
   },
+  "settings": {
+    "subtitle": "Manage your profile and preferences.",
+    "profile": "Profile",
+    "displayName": "Display name",
+    "email": "Email",
+    "appearance": "Appearance",
+    "language": "Language",
+    "theme": "Theme",
+    "themeDark": "Dark",
+    "themeLight": "Light",
+    "themeSystem": "System",
+    "connection": "Connection",
+    "connectionDefault": "Default connection",
+    "connLocal": "Local",
+    "connRemote": "Remote (server)",
+    "save": "Save",
+    "saved": "Saved",
+    "loadError": "Could not load settings.",
+    "saveError": "Save failed. Please try again."
+  },
   "auth": {
     "loginSubtitle": "Sign in to your workspace.",
     "signupSubtitle": "Set up your workspace.",

@@ -29,6 +29,26 @@
     "soon": "bald",
     "comingSoon": "Kommt bald"
   },
+  "settings": {
+    "subtitle": "Verwalte dein Profil und deine Einstellungen.",
+    "profile": "Profil",
+    "displayName": "Anzeigename",
+    "email": "E-Mail",
+    "appearance": "Darstellung",
+    "language": "Sprache",
+    "theme": "Erscheinungsbild",
+    "themeDark": "Dunkel",
+    "themeLight": "Hell",
+    "themeSystem": "System",
+    "connection": "Verbindung",
+    "connectionDefault": "Standard-Verbindung",
+    "connLocal": "Lokal",
+    "connRemote": "Remote (Server)",
+    "save": "Speichern",
+    "saved": "Gespeichert",
+    "loadError": "Einstellungen konnten nicht geladen werden.",
+    "saveError": "Speichern fehlgeschlagen. Bitte erneut versuchen."
+  },
   "auth": {
     "loginSubtitle": "Melde dich in deinem Workspace an.",
     "signupSubtitle": "Richte deinen Workspace ein.",
