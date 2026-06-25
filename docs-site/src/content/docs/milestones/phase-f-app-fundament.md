@@ -55,6 +55,10 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   `prefers-color-scheme`). **Verifiziert:** 8 Backend-Tests (CRUD, Validierung,
   Owner-Isolation, Auth-Enforcement → 57 gesamt), Sichtprüfung (Theme Dunkel↔Hell schaltet
   sofort + persistiert in Postgres), Konsole sauber.
+- **F3.1 — Settings-UI-Politur** ✅
+  Sektionen über eine **Tab-Navigation** innerhalb der Seite (Profil · Darstellung ·
+  Verbindung) statt gestapelt; der Modelle-Tab (F4) hängt sich hier ein. Buttons global
+  etwas kompakter (geringere Höhe). Verifiziert (Chrome): Tab-Wechsel, Brand, Konsole sauber.
 - **F4 — Modell-Verwaltung (modell-agnostisch)** ⏳
   `ModelEndpoint` (base_url, model, **api_key verschlüsselt**) + CRUD-API; Settings-Sektion.
 - **F5 — Chat echt + Sessions + Sidebar** ⏳
