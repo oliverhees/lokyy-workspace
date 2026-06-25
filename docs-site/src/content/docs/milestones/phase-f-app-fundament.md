@@ -104,6 +104,12 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   Autotitle → Reload behält Verlauf → löschen. Konsole sauber.
   **LiteLLM-Hinweis:** lokale/eigene Endpoints ohne Auth brauchen trotzdem einen `api_key` — die
   LLM-Schicht setzt dafür einen harmlosen Platzhalter.
+- **F5.1 — Chat-Feintuning** ✅
+  Streaming-Zustand als **Phasen-Indikator** (Verbinde → Denkt nach → Schreibt, mit Spinner) statt
+  nur Cursor-Punkt. Unter jeder Antwort eine **Caption „Modell · Uhrzeit"** — das genutzte Modell
+  wird pro Nachricht persistiert (`chat_messages.model_used` + Migration, `created_at`/`model_used`
+  in der Messages-API). Verifiziert (Chrome gegen Mock): „Denkt nach …" + Spinner während Latenz,
+  Caption z. B. „test-pro · 17:56". 77 Backend-Tests grün, Konsole sauber.
 
 > **🚩 Checkpoint erreicht:** Vollwertige, benutzbare App — Login → Shell → Settings/Modell →
 > **echter Chat mit persistiertem Verlauf**. Nächster Schritt: **QA-Gate-Pass**, dann die
