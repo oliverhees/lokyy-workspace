@@ -1,21 +1,25 @@
 "use client";
 
-// F5 — chat bound to a persisted session. Loads the session's history, streams the
-// assistant reply from the real model, and the backend persists both messages.
+// F5/F5.1 — chat bound to a persisted session. Loads history, streams the reply
+// from the real model, shows a phase indicator (connecting → thinking → writing)
+// and a model · time caption under each answer.
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { streamChat, type ChatMessage } from "@/lib/api";
+import { listModels } from "@/lib/models";
 import { getMessages } from "@/lib/sessions";
 import { ChatInput } from "./ChatInput";
 import { EmptyState } from "./EmptyState";
-import { MessageBubble } from "./MessageBubble";
+import { MessageBubble, type ChatPhase } from "./MessageBubble";
 
 export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?: () => void }) {
   const t = useTranslations("chat");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streaming, setStreaming] = useState(false);
+  const [phase, setPhase] = useState<ChatPhase>(null);
   const [error, setError] = useState<string | null>(null);
+  const [defaultModel, setDefaultModel] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Load the session's persisted history whenever the active session changes.
@@ -30,6 +34,17 @@ export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?
     };
   }, [sessionId]);
 
+  // Know the current default model so a freshly streamed answer can show its caption.
+  useEffect(() => {
+    let active = true;
+    listModels()
+      .then((ms) => active && setDefaultModel(ms.find((m) => m.is_default)?.model ?? null))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, streaming]);
@@ -39,6 +54,10 @@ export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?
     const history: ChatMessage[] = [...messages, { role: "user", content: text }];
     setMessages([...history, { role: "assistant", content: "" }]);
     setStreaming(true);
+    setPhase("connecting");
+
+    // escalate to "thinking" if the first token is slow to arrive
+    const thinkTimer = setTimeout(() => setPhase((p) => (p === "connecting" ? "thinking" : p)), 700);
 
     const appendDelta = (delta: string) =>
       setMessages((prev) => {
@@ -51,8 +70,28 @@ export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?
       });
 
     try {
-      await streamChat({ sessionId, content: text, onDelta: appendDelta });
-      onActivity?.(); // title may have been set from the first message
+      await streamChat({
+        sessionId,
+        content: text,
+        onDelta: (d) => {
+          setPhase("writing");
+          appendDelta(d);
+        },
+      });
+      // stamp the freshly completed answer with model + time for its caption
+      setMessages((prev) => {
+        const next = [...prev];
+        const last = next[next.length - 1];
+        if (last && last.role === "assistant") {
+          next[next.length - 1] = {
+            ...last,
+            model_used: defaultModel,
+            created_at: new Date().toISOString(),
+          };
+        }
+        return next;
+      });
+      onActivity?.();
     } catch {
       setError(t("error"));
       setMessages((prev) => {
@@ -62,7 +101,9 @@ export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?
         return next;
       });
     } finally {
+      clearTimeout(thinkTimer);
       setStreaming(false);
+      setPhase(null);
     }
   }
 
@@ -80,6 +121,7 @@ export function Chat({ sessionId, onActivity }: { sessionId: string; onActivity?
                 key={i}
                 message={m}
                 pending={streaming && i === messages.length - 1 && m.role === "assistant"}
+                phase={phase}
               />
             ))}
           </div>

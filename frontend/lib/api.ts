@@ -28,6 +28,8 @@ export async function checkHealth(base?: string): Promise<boolean> {
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  model_used?: string | null;
+  created_at?: string; // ISO; set for persisted messages
 }
 
 export interface ChatStreamOptions {
