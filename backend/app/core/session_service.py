@@ -7,9 +7,10 @@ writes are scoped to user_id.
 """
 from sqlmodel import Session, select
 
-from app.models.entities import ChatMessage, ChatSession, User, Workspace
+from app.models.entities import ChatMessage, ChatSession, User, Workspace, utcnow
 
 DEFAULT_WORKSPACE_NAME = "Mein Workspace"
+DEFAULT_SESSION_TITLE = "Neue Unterhaltung"
 _TITLE_MAX = 60
 
 
@@ -47,7 +48,7 @@ def create_session(db: Session, *, user: User, title: str | None = None) -> Chat
         organization_id=user.organization_id,
         workspace_id=ws.id,
         owner_id=user.id,
-        title=title or "Neue Unterhaltung",
+        title=title or DEFAULT_SESSION_TITLE,
     )
     db.add(s)
     db.commit()
@@ -78,9 +79,11 @@ def add_message(db: Session, *, session_id: str, role: str, content: str,
                 model_used: str | None = None) -> ChatMessage:
     m = ChatMessage(session_id=session_id, role=role, content=content, model_used=model_used)
     db.add(m)
-    # touch the session so it sorts to the top and updated_at reflects activity
+    # touch the session so it sorts to the top — must set a value, since SQLAlchemy
+    # onupdate only fires when a column actually changes.
     s = db.get(ChatSession, session_id)
     if s is not None:
+        s.updated_at = utcnow()
         db.add(s)
     db.commit()
     db.refresh(m)
@@ -89,7 +92,7 @@ def add_message(db: Session, *, session_id: str, role: str, content: str,
 
 def maybe_autotitle(db: Session, *, session: ChatSession, first_user_message: str) -> None:
     """Give a fresh session a title from its first user message."""
-    if session.title in ("Neue Unterhaltung", "", None):
+    if session.title in (DEFAULT_SESSION_TITLE, "", None):
         title = first_user_message.strip().splitlines()[0][:_TITLE_MAX] if first_user_message.strip() else "Unterhaltung"
         session.title = title
         db.add(session)
