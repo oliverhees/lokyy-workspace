@@ -50,6 +50,7 @@
     "profile": "Profil",
     "displayName": "Anzeigename",
     "email": "E-Mail",
+    "agent": "Agent",
     "appearance": "Darstellung",
     "models": "Modelle",
     "language": "Sprache",
@@ -64,6 +65,17 @@
     "save": "Speichern",
     "saved": "Gespeichert",
     "loadError": "Einstellungen konnten nicht geladen werden.",
+    "saveError": "Speichern fehlgeschlagen. Bitte erneut versuchen."
+  },
+  "agent": {
+    "soul": "Persönlichkeit (Soul)",
+    "soulHint": "Wie soll sich dein Agent verhalten? Tonfall, Rolle, Regeln. Fließt als System-Prompt in jeden Chat.",
+    "profile": "Über dich (Nutzerprofil)",
+    "profileHint": "Was soll der Agent dauerhaft über dich wissen? Name, Tätigkeit, Vorlieben, Kontext.",
+    "profilePlaceholder": "z. B. Ich bin selbstständige Designerin, arbeite viel mit Kunden aus dem Handwerk …",
+    "save": "Speichern",
+    "saved": "Gespeichert",
+    "loadError": "Agent-Kontext konnte nicht geladen werden.",
     "saveError": "Speichern fehlgeschlagen. Bitte erneut versuchen."
   },
   "models": {

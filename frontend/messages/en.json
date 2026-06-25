@@ -50,6 +50,7 @@
     "profile": "Profile",
     "displayName": "Display name",
     "email": "Email",
+    "agent": "Agent",
     "appearance": "Appearance",
     "models": "Models",
     "language": "Language",
@@ -64,6 +65,17 @@
     "save": "Save",
     "saved": "Saved",
     "loadError": "Could not load settings.",
+    "saveError": "Save failed. Please try again."
+  },
+  "agent": {
+    "soul": "Personality (soul)",
+    "soulHint": "How should your agent behave? Tone, role, rules. Flows into every chat as the system prompt.",
+    "profile": "About you (profile)",
+    "profileHint": "What should the agent always know about you? Name, work, preferences, context.",
+    "profilePlaceholder": "e.g. I'm a freelance designer working mostly with trade clients …",
+    "save": "Save",
+    "saved": "Saved",
+    "loadError": "Could not load agent context.",
     "saveError": "Save failed. Please try again."
   },
   "models": {
