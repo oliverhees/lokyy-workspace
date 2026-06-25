@@ -58,6 +58,29 @@ def test_discover_without_base_url_is_rejected():
         app.dependency_overrides.pop(get_current_user, None)
 
 
+def test_discover_connection_error_is_friendly_400():
+    app.dependency_overrides[get_current_user] = _current_user_override
+    try:
+        # loopback is allowed (local models) but nothing listens → friendly 400, not 500
+        r = client.post("/models/discover", json={
+            "provider": "custom", "base_url": "http://127.0.0.1:1/v1", "api_key": "",
+        })
+        assert r.status_code == 400
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_discover_blocks_internal_metadata_url():
+    app.dependency_overrides[get_current_user] = _current_user_override
+    try:
+        r = client.post("/models/discover", json={
+            "provider": "custom", "base_url": "http://169.254.169.254/latest", "api_key": "",
+        })
+        assert r.status_code == 400  # SSRF guard
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
 def test_models_crud_and_key_never_returned():
     app.dependency_overrides[get_current_user] = _current_user_override
     try:

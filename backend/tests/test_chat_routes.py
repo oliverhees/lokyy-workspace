@@ -73,7 +73,7 @@ def test_chat_streams_and_persists(monkeypatch):
         with Session(_eng) as s:
             u = s.get(User, _USER_ID)
             model_service.create_endpoint(s, user_id=u.id, name="M", provider="openai",
-                                          base_url="http://x/v1", model="m", api_key="k")
+                                          base_url="http://127.0.0.1:9/v1", model="m", api_key="k")
             sess = session_service.create_session(s, user=u)
             sid = sess.id
         r = client.post("/chat", json={"session_id": sid, "content": "hallo"})

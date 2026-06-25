@@ -25,6 +25,29 @@ def test_crypto_roundtrip_and_empty():
     assert crypto.decrypt(token) == "sk-secret-123"
 
 
+def test_crypto_try_decrypt_handles_bad_token():
+    # graceful path for tampering / key rotation: None instead of raising
+    assert crypto.try_decrypt("") == ""
+    assert crypto.try_decrypt("not-a-valid-fernet-token") is None
+    token = crypto.encrypt("secret")
+    assert crypto.try_decrypt(token) == "secret"
+
+
+def test_resolve_endpoint_foreign_id_falls_back_to_default():
+    db = _db()
+    u1 = _user(db, email="one@x.de")
+    u2 = _user(db, email="two@x.de")
+    d1 = model_service.create_endpoint(db, user_id=u1.id, name="D1", provider="openai",
+                                       base_url="u", model="m")  # u1's default
+    foreign = model_service.create_endpoint(db, user_id=u2.id, name="F", provider="openai",
+                                            base_url="u", model="m")
+    # u1 passing u2's endpoint id must NOT use it — falls back to u1's own default
+    assert model_service.resolve_endpoint(db, user_id=u1.id, endpoint_id=foreign.id).id == d1.id
+    # own id resolves to that endpoint; no id resolves to default
+    assert model_service.resolve_endpoint(db, user_id=u1.id, endpoint_id=d1.id).id == d1.id
+    assert model_service.resolve_endpoint(db, user_id=u1.id).id == d1.id
+
+
 def test_create_encrypts_key_at_rest():
     db = _db()
     u = _user(db)
