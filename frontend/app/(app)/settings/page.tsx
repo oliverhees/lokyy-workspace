@@ -18,11 +18,12 @@ import {
   updateSettings,
 } from "@/lib/settings";
 import { applyTheme, storeTheme } from "@/lib/theme";
+import { ModelsTab } from "@/components/settings/ModelsTab";
 
 const fieldClass =
   "w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30 dark:border-slate-700 dark:bg-slate-900";
 
-const TABS = ["profile", "appearance", "connection"] as const;
+const TABS = ["profile", "appearance", "models", "connection"] as const;
 type Tab = (typeof TABS)[number];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -195,6 +196,8 @@ export default function SettingsPage() {
             </Row>
           </>
         )}
+
+        {tab === "models" && <ModelsTab />}
 
         {tab === "connection" && (
           <Row label={t("connectionDefault")}>
