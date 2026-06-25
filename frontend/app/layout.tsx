@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 
+import { AuthProvider } from "@/components/auth/AuthProvider";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,7 +21,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} className="dark">
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased dark:bg-navy dark:text-slate-200">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

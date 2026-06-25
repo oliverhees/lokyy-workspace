@@ -21,5 +21,24 @@
     "checking": "checking…",
     "noServer": "No server configured (NEXT_PUBLIC_SERVER_URL)"
   },
-  "lang": { "label": "Language", "de": "Deutsch", "en": "English" }
+  "lang": { "label": "Language", "de": "Deutsch", "en": "English" },
+  "auth": {
+    "loginSubtitle": "Sign in to your workspace.",
+    "signupSubtitle": "Set up your workspace.",
+    "organizationName": "Organization name",
+    "displayName": "Your name",
+    "email": "Email",
+    "password": "Password",
+    "totpCode": "2FA code",
+    "totpRequired": "Please enter your 2FA code.",
+    "loginCta": "Sign in",
+    "signupCta": "Create account",
+    "pleaseWait": "One moment …",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "logout": "Sign out",
+    "loginFailed": "Sign-in failed. Check your email and password.",
+    "signupFailed": "Sign-up failed. Is the email already taken?",
+    "networkError": "Could not reach the backend. Is the server running?"
+  }
 }

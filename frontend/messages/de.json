@@ -21,5 +21,24 @@
     "checking": "prüfe…",
     "noServer": "Kein Server konfiguriert (NEXT_PUBLIC_SERVER_URL)"
   },
-  "lang": { "label": "Sprache", "de": "Deutsch", "en": "English" }
+  "lang": { "label": "Sprache", "de": "Deutsch", "en": "English" },
+  "auth": {
+    "loginSubtitle": "Melde dich in deinem Workspace an.",
+    "signupSubtitle": "Richte deinen Workspace ein.",
+    "organizationName": "Name der Organisation",
+    "displayName": "Dein Name",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "totpCode": "2FA-Code",
+    "totpRequired": "Bitte gib deinen 2FA-Code ein.",
+    "loginCta": "Anmelden",
+    "signupCta": "Konto erstellen",
+    "pleaseWait": "Einen Moment …",
+    "noAccount": "Noch kein Konto?",
+    "haveAccount": "Schon ein Konto?",
+    "logout": "Abmelden",
+    "loginFailed": "Anmeldung fehlgeschlagen. Prüfe E-Mail und Passwort.",
+    "signupFailed": "Registrierung fehlgeschlagen. Ist die E-Mail schon vergeben?",
+    "networkError": "Verbindung zum Backend fehlgeschlagen. Läuft der Server?"
+  }
 }
