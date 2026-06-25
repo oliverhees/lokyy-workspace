@@ -59,8 +59,17 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   Sektionen über eine **Tab-Navigation** innerhalb der Seite (Profil · Darstellung ·
   Verbindung) statt gestapelt; der Modelle-Tab (F4) hängt sich hier ein. Buttons global
   etwas kompakter (geringere Höhe). Verifiziert (Chrome): Tab-Wechsel, Brand, Konsole sauber.
-- **F4 — Modell-Verwaltung (modell-agnostisch)** ⏳
-  `ModelEndpoint` (base_url, model, **api_key verschlüsselt**) + CRUD-API; Settings-Sektion.
+- **F4 — Modell-Verwaltung (modell-agnostisch)** ✅
+  `ModelEndpoint` (name, provider, base_url, model, **api_key verschlüsselt at rest**) + Migration,
+  owner-scoped CRUD-API (`/models`, GET/POST/PUT/DELETE + `/{id}/default`). Verschlüsselung via
+  `app/core/crypto.py` (Fernet, Key aus `SECRET_KEY` abgeleitet); der Klartext-Key wird **nie**
+  zurückgegeben (Response nur `has_api_key`). Default-Handling (erstes Modell wird Default,
+  Umschalten räumt andere auf, Löschen befördert nächstes). **Frontend:** „Modelle"-Tab in den
+  Settings (`components/settings/ModelsTab.tsx`) — Liste mit Default-/Key-Badges, Anlegen/Bearbeiten
+  (Key-Feld write-only) /Löschen/Als-Standard, i18n DE/EN. **Verifiziert:** 10 Backend-Tests
+  (CRUD, Crypto-Roundtrip, Default-Logik, Owner-Isolation, Key-nie-im-Klartext → 67 gesamt),
+  Sichtprüfung (Modell anlegen → Liste, Badges) + **DB-Check: Key liegt als Fernet-Token vor,
+  kein Klartext**. Konsole sauber.
 - **F5 — Chat echt + Sessions + Sidebar** ⏳
   `/chat` nutzt den echten Agent-Loop gegen das konfigurierte Modell; Sessions persistieren;
   Sidebar mit Konversationsliste. **🚩 Checkpoint + QA-Gate** danach, dann M2 ff.
