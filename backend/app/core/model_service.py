@@ -142,6 +142,15 @@ def get_default(db: Session, *, user_id: str) -> ModelEndpoint | None:
     ).first()
 
 
+def resolve_endpoint(db: Session, *, user_id: str, endpoint_id: str | None = None) -> ModelEndpoint | None:
+    """Pick the endpoint to use: the requested one (if owned), else the user's default."""
+    if endpoint_id:
+        ep = db.get(ModelEndpoint, endpoint_id)
+        if ep is not None and ep.user_id == user_id:  # owner check
+            return ep
+    return get_default(db, user_id=user_id)
+
+
 def decrypt_key(ep: ModelEndpoint) -> str:
     """Plaintext API key for a server-side LLM call (F5). Never sent to the client."""
     return crypto.decrypt(ep.api_key_encrypted)

@@ -31,6 +31,7 @@ router = APIRouter(tags=["chat"])
 class ChatIn(BaseModel):
     session_id: str
     content: str
+    model_endpoint_id: str | None = None  # optional override; falls back to the default
 
 
 def _sse(delta: str) -> str:
@@ -76,7 +77,7 @@ async def chat(body: ChatIn, db: Session = Depends(get_session),
         for m in session_service.list_messages(db, user_id=user.id, session_id=session.id)
     ]
 
-    endpoint = model_service.get_default(db, user_id=user.id)
+    endpoint = model_service.resolve_endpoint(db, user_id=user.id, endpoint_id=body.model_endpoint_id)
     if endpoint is None:
         return StreamingResponse(
             _hint_stream("Kein Modell konfiguriert. Lege in den Einstellungen unter „Modelle“ "
