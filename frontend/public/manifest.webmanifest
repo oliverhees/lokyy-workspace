@@ -1,0 +1,12 @@
+{
+  "name": "Lokyy Workspace",
+  "short_name": "Lokyy",
+  "description": "Das self-hosted KI-Betriebssystem für Selbstständige & KMU.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1120",
+  "theme_color": "#0b1120",
+  "icons": [
+    { "src": "/lokyy-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

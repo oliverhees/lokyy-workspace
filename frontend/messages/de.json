@@ -1,0 +1,16 @@
+{
+  "app": {
+    "badge": "KI-Betriebssystem",
+    "tagline": "Das self-hosted KI-Betriebssystem für Selbstständige & KMU. Datenschutz zuerst, lokal oder auf dem eigenen Server.",
+    "beta": "Beta · Build in Public · in Entwicklung"
+  },
+  "conn": {
+    "local": "Lokal",
+    "remote": "Remote",
+    "connected": "verbunden",
+    "offline": "offline",
+    "checking": "prüfe…",
+    "noServer": "Kein Server konfiguriert (NEXT_PUBLIC_SERVER_URL)"
+  },
+  "lang": { "label": "Sprache", "de": "Deutsch", "en": "English" }
+}

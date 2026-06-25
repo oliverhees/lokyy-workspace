@@ -1,0 +1,16 @@
+{
+  "app": {
+    "badge": "AI Operating System",
+    "tagline": "The self-hosted AI operating system for the self-employed & SMEs. Privacy-first, local or on your own server.",
+    "beta": "Beta · Build in Public · in development"
+  },
+  "conn": {
+    "local": "Local",
+    "remote": "Remote",
+    "connected": "connected",
+    "offline": "offline",
+    "checking": "checking…",
+    "noServer": "No server configured (NEXT_PUBLIC_SERVER_URL)"
+  },
+  "lang": { "label": "Language", "de": "Deutsch", "en": "English" }
+}
