@@ -119,8 +119,28 @@ Features (M2 ff.). Vertikale Durchstiche statt horizontaler Layer.
   Verifiziert (Chrome): Leiste wie Referenz, Modell-Dropdown gruppiert + wählbar, Konsole sauber.
 
 > **🚩 Checkpoint erreicht:** Vollwertige, benutzbare App — Login → Shell → Settings/Modell →
-> **echter Chat mit persistiertem Verlauf**. Nächster Schritt: **QA-Gate-Pass**, dann die
-> Feature-Meilensteine (M2 ff.).
+> **echter Chat mit persistiertem Verlauf**.
+
+## 🚩 QA-Gate — bestanden
+
+QA-Pass durch drei dedizierte Review-Agenten (Security, Code-Qualität, Test-Coverage).
+Bestätigt solide: Owner-/Mandanten-Isolation, Key-Verschlüsselung (Fernet, nie Klartext),
+argon2id. **Behoben im Gate:**
+
+- **SSRF** (`app/core/ssrf.py`): Discovery- und Chat-Calls validieren die Ziel-URL — Cloud-Metadata/
+  link-local/multicast/reserved immer blockiert, http(s)-only, keine Redirects; private/loopback
+  für lokale Modelle per Setting (`allow_private_model_hosts`) erlaubt.
+- **`/auth/register`** jetzt admin-only, Organisation aus der Session (nicht vom Client).
+- **Logout** widerruft die Server-Session (nicht nur Cookie).
+- **Prod-Guards**: Startabbruch bei schwachem `SECRET_KEY`/`secure_cookies=false` in Produktion,
+  Wildcard-CORS mit Credentials.
+- **Bugfix**: `updated_at`-Touch (Sidebar-Sortierung), Streaming-Persistenz mit Fehlerlog, generische
+  LLM-Fehlermeldung (kein Exception-Leak).
+- **Tests**: +16 → **93 grün** (Auth-Routes inkl. 2FA/Signup/Admin-Register/Logout-Revoke, SSRF-Guard,
+  sessions-HTTP-Router, Crypto-Rotation, resolve_endpoint-Owner-Fallback, Discovery-Fehlerzweige).
+
+**Als Folge-Tasks (Backlog):** Rate-Limiting (Auth), DSGVO (Audit-Log/Löschung), Re-Auth+Passwort-HIBP,
+Chat-UI-Robustheit (AbortController/Buffer). Damit ist die Fundament-Phase **gate-grün** → M2.
 
 ## Sidebar-Zielbild & Startseite (aus dem Mockup)
 
