@@ -151,6 +151,7 @@ class AgentContext(SQLModel, table=True):
     workspace_id: str = Field(foreign_key="workspaces.id", index=True, unique=True, ondelete="CASCADE")
     soul: str = Field(default="")  # persona / behaviour (Markdown)
     user_profile: str = Field(default="")  # what the agent knows about the user (Markdown)
+    telos: str = Field(default="")  # mission / goals / challenges (Markdown), M2.4
     created_at: datetime = Field(default_factory=utcnow, nullable=False)
     updated_at: datetime = Field(default_factory=utcnow, nullable=False, sa_column_kwargs=_UPDATED)
 

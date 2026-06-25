@@ -45,3 +45,14 @@ def test_assemble_system_prompt():
     ctx2 = context_service.update_context(db, workspace_id=wid, soul="", user_profile="")
     p2 = context_service.assemble_system_prompt(ctx2)
     assert context_service.DEFAULT_SOUL in p2 and "Was du über den Nutzer weißt" not in p2
+
+
+def test_telos_in_system_prompt():
+    db = _db()
+    wid = _workspace(db)
+    ctx = context_service.update_context(db, workspace_id=wid, telos="Mission: 1000 Kunden helfen.")
+    prompt = context_service.assemble_system_prompt(ctx)
+    assert "Telos" in prompt and "1000 Kunden" in prompt
+    # empty telos → no telos section
+    ctx2 = context_service.update_context(db, workspace_id=wid, telos="")
+    assert "Telos" not in context_service.assemble_system_prompt(ctx2)

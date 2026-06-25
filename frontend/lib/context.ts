@@ -5,6 +5,7 @@ import { apiFetch } from "./api";
 export interface AgentContext {
   soul: string;
   user_profile: string;
+  telos: string;
 }
 
 export async function fetchContext(): Promise<AgentContext> {

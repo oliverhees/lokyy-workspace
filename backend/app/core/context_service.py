@@ -35,12 +35,15 @@ def update_context(
     workspace_id: str,
     soul: str | None = None,
     user_profile: str | None = None,
+    telos: str | None = None,
 ) -> AgentContext:
     ctx = get_or_create_context(db, workspace_id=workspace_id)
     if soul is not None:
         ctx.soul = soul
     if user_profile is not None:
         ctx.user_profile = user_profile
+    if telos is not None:
+        ctx.telos = telos
     db.add(ctx)
     db.commit()
     db.refresh(ctx)
@@ -56,9 +59,13 @@ def assemble_system_prompt(ctx: AgentContext, *, memories: list[str] | None = No
     parts: list[str] = []
     soul = (ctx.soul or "").strip()
     profile = (ctx.user_profile or "").strip()
+    telos = (ctx.telos or "").strip()
     parts.append(soul or DEFAULT_SOUL)
     if profile:
         parts.append("# Was du über den Nutzer weißt\n" + profile)
+    if telos:
+        parts.append("# Mission & Ziele des Nutzers (Telos)\n" + telos
+                     + "\n\nRichte deine Vorschläge an diesen Zielen aus.")
     if memories:
         bullets = "\n".join(f"- {m}" for m in memories)
         parts.append("# Relevante Erinnerungen aus früheren Gesprächen\n" + bullets)

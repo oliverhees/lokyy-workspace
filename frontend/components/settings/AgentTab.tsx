@@ -15,6 +15,7 @@ export function AgentTab() {
   const [data, setData] = useState<AgentContext | null>(null);
   const [soul, setSoul] = useState("");
   const [profile, setProfile] = useState("");
+  const [telos, setTelos] = useState("");
   const [busy, setBusy] = useState(false);
   const [hint, setHint] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +26,7 @@ export function AgentTab() {
         setData(c);
         setSoul(c.soul);
         setProfile(c.user_profile);
+        setTelos(c.telos);
       })
       .catch(() => setError(t("loadError")));
   }, [t]);
@@ -33,7 +35,7 @@ export function AgentTab() {
     setBusy(true);
     setError(null);
     try {
-      const c = await updateContext({ soul, user_profile: profile });
+      const c = await updateContext({ soul, user_profile: profile, telos });
       setData(c);
       setHint(t("saved"));
       setTimeout(() => setHint(null), 1800);
@@ -48,7 +50,7 @@ export function AgentTab() {
     return <div className="p-2 text-sm text-slate-400">{error ?? "…"}</div>;
   }
 
-  const dirty = soul !== data.soul || profile !== data.user_profile;
+  const dirty = soul !== data.soul || profile !== data.user_profile || telos !== data.telos;
 
   return (
     <div className="space-y-5">
@@ -66,6 +68,14 @@ export function AgentTab() {
         <p className="mb-1.5 text-xs text-slate-400">{t("profileHint")}</p>
         <textarea className={areaClass} rows={6} value={profile} onChange={(e) => setProfile(e.target.value)}
                   placeholder={t("profilePlaceholder")} />
+      </div>
+      <div>
+        <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
+          {t("telos")}
+        </label>
+        <p className="mb-1.5 text-xs text-slate-400">{t("telosHint")}</p>
+        <textarea className={areaClass} rows={6} value={telos} onChange={(e) => setTelos(e.target.value)}
+                  placeholder={t("telosPlaceholder")} />
       </div>
       {error && <p className="text-sm text-red-500">{error}</p>}
       <div className="flex items-center gap-3">
