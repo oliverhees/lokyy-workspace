@@ -16,6 +16,11 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
+# Fail fast on insecure configuration (weak secret / cookies / wildcard CORS).
+_issues = settings.security_issues()
+if _issues:
+    raise RuntimeError("Unsichere Konfiguration: " + " ".join(_issues))
+
 app = FastAPI(
     title="Lokyy Workspace API",
     version="0.0.1",

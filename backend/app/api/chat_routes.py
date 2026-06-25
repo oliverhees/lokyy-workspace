@@ -13,6 +13,7 @@ because the request-scoped session may already be closed while streaming.
 from __future__ import annotations
 
 import json
+import logging
 from collections.abc import AsyncIterator
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -21,11 +22,13 @@ from pydantic import BaseModel
 from sqlmodel import Session
 
 from app.api.deps import get_current_user
-from app.core import llm, model_service, session_service
+from app.core import llm, model_service, session_service, ssrf
+from app.core.config import get_settings
 from app.core.db import engine, get_session
 from app.models.entities import User
 
 router = APIRouter(tags=["chat"])
+log = logging.getLogger("lokyy.chat")
 
 
 class ChatIn(BaseModel):
@@ -44,9 +47,12 @@ async def _hint_stream(text: str) -> AsyncIterator[str]:
 
 
 def _persist_assistant(session_id: str, text: str, model_used: str | None) -> None:
-    with Session(engine) as s:
-        session_service.add_message(s, session_id=session_id, role="assistant",
-                                    content=text, model_used=model_used)
+    try:
+        with Session(engine) as s:
+            session_service.add_message(s, session_id=session_id, role="assistant",
+                                        content=text, model_used=model_used)
+    except Exception:  # never lose the answer silently — at least log it
+        log.exception("failed to persist assistant message for session %s", session_id)
 
 
 async def _llm_stream(history: list[dict], cfg: llm.LLMConfig, session_id: str) -> AsyncIterator[str]:
@@ -55,8 +61,9 @@ async def _llm_stream(history: list[dict], cfg: llm.LLMConfig, session_id: str) 
         async for delta in llm.stream_chat(history, cfg):
             full += delta
             yield _sse(delta)
-    except Exception as exc:  # surface a friendly error, never crash the stream
-        yield _sse(f"[LLM-Fehler: {exc}]")
+    except Exception:  # surface a generic error (no raw exception → no info leak)
+        log.exception("LLM stream failed for session %s", session_id)
+        yield _sse("[Fehler bei der Modell-Antwort. Bitte erneut versuchen.]")
     if full:
         _persist_assistant(session_id, full, cfg.model)
     yield "data: [DONE]\n\n"
@@ -84,6 +91,19 @@ async def chat(body: ChatIn, db: Session = Depends(get_session),
                          "einen Endpoint an, um den Chat zu nutzen."),
             media_type="text/event-stream",
         )
+
+    # SSRF guard: the stored base_url is hit server-side during streaming.
+    if endpoint.base_url:
+        try:
+            ssrf.validate_outbound_url(
+                endpoint.base_url, allow_private=get_settings().allow_private_model_hosts
+            )
+        except ssrf.UnsafeUrlError:
+            return StreamingResponse(
+                _hint_stream("Die Base-URL des Modells ist nicht erlaubt (interne Adresse). "
+                             "Bitte in den Einstellungen korrigieren."),
+                media_type="text/event-stream",
+            )
 
     cfg = llm.LLMConfig(
         base_url=endpoint.base_url,

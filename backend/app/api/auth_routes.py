@@ -1,5 +1,5 @@
 """Auth HTTP routes: register, login (with 2FA), logout, me, 2FA, API tokens."""
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, EmailStr, Field
 from sqlmodel import Session
 
@@ -15,7 +15,7 @@ settings = get_settings()
 
 # ── Schemas (Pydantic — strict request/response contracts) ───────────────────
 class RegisterIn(BaseModel):
-    organization_id: str
+    # organization is derived from the calling admin's session — never client-supplied
     email: EmailStr
     password: str = Field(min_length=8)
     display_name: str = Field(min_length=1)
@@ -59,10 +59,15 @@ def _set_session_cookie(resp: Response, raw: str) -> None:
 
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def register(body: RegisterIn, db: Session = Depends(get_session)) -> User:
+def register(body: RegisterIn, db: Session = Depends(get_session),
+             admin: User = Depends(get_current_user)) -> User:
+    """Add a member to the CALLER's organization. Org admins only; org is taken from
+    the admin's session (never the client). Anonymous self-service is /auth/signup."""
+    if not admin.is_org_admin:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "nur Organisations-Admins")
     try:
         return auth.register_user(
-            db, organization_id=body.organization_id, email=body.email,
+            db, organization_id=admin.organization_id, email=body.email,
             password=body.password, display_name=body.display_name,
         )
     except auth.AuthError as e:
@@ -97,10 +102,13 @@ def login(body: LoginIn, response: Response, db: Session = Depends(get_session))
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-def logout(response: Response, request_cookie: str | None = None,
+def logout(request: Request, response: Response,
            db: Session = Depends(get_session),
            user: User = Depends(get_current_user)) -> None:
-    # Session cookie is read by the dependency chain; clear it client-side.
+    # Revoke the server-side session (not just clear the cookie) so the token dies now.
+    raw = request.cookies.get(SESSION_COOKIE)
+    if raw:
+        auth.revoke_session(db, raw)
     response.delete_cookie(SESSION_COOKIE)
 
 

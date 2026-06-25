@@ -9,7 +9,8 @@ from pydantic import BaseModel, Field, field_validator
 from sqlmodel import Session
 
 from app.api.deps import get_current_user
-from app.core import model_service
+from app.core import model_service, ssrf
+from app.core.config import get_settings
 from app.core.db import get_session
 from app.core.llm import KNOWN_PROVIDERS
 from app.models.entities import ModelEndpoint, User
@@ -101,10 +102,14 @@ async def discover_models(body: DiscoverIn, user: User = Depends(get_current_use
             "Für diesen Anbieter ist keine automatische Modell-Liste verfügbar — "
             "bitte die Modell-ID manuell eingeben.",
         )
+    try:
+        ssrf.validate_outbound_url(base, allow_private=get_settings().allow_private_model_hosts)
+    except ssrf.UnsafeUrlError as e:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, f"Base-URL nicht erlaubt: {e}")
     url = base.rstrip("/") + "/models"
     headers = {"Authorization": f"Bearer {body.api_key}"} if body.api_key else {}
     try:
-        async with httpx.AsyncClient(timeout=20.0) as client:
+        async with httpx.AsyncClient(timeout=20.0, follow_redirects=False) as client:
             resp = await client.get(url, headers=headers)
             resp.raise_for_status()
             data = resp.json()
