@@ -1,0 +1,15 @@
+# Lokyy Workspace — Dev-Override (lokale Entwicklung).
+#
+# Die Produktiv-DB (docker-compose.yml) bleibt absichtlich internal-only.
+# Für lokale Entwicklung mit einem Host-Backend (Hot-Reload) wird die DB hier
+# auf einen FREIEN Host-Port gelegt, damit das Host-Backend sie erreicht.
+#
+# NICHT automatisch geladen — explizit starten:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db
+#
+# Port 5435, weil 5432/5433/5434 auf der Dev-Maschine durch andere Infra belegt
+# sind (per ${DB_PORT} überschreibbar). Nur an 127.0.0.1 gebunden (nicht öffentlich).
+services:
+  db:
+    ports:
+      - "127.0.0.1:${DB_PORT:-5435}:5432"
