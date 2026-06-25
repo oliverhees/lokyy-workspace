@@ -1,4 +1,5 @@
 """F4: /models routes — auth, CRUD round-trip, and key never returned in plaintext."""
+import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlalchemy.pool import StaticPool
@@ -29,8 +30,14 @@ def _current_user_override() -> User:
         return s.get(User, _USER_ID)
 
 
-app.dependency_overrides[get_session] = _session_override
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def _override_session():
+    app.dependency_overrides[get_session] = _session_override
+    yield
+    app.dependency_overrides.pop(get_session, None)
 
 
 def test_models_requires_auth():

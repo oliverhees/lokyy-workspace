@@ -92,8 +92,13 @@ def build_kwargs(cfg: LLMConfig, messages: list[dict], *, stream: bool) -> dict:
     }
     if cfg.base_url:
         kwargs["api_base"] = cfg.base_url
-    if cfg.api_key:
-        kwargs["api_key"] = cfg.api_key
+    key = cfg.api_key
+    if not key and kwargs["model"].startswith("openai/"):
+        # Local / self-hosted OpenAI-compatible endpoints often need no auth, but
+        # LiteLLM still requires an api_key to be present — pass a harmless placeholder.
+        key = "sk-no-key-required"
+    if key:
+        kwargs["api_key"] = key
     if cfg.extra_headers:
         kwargs["extra_headers"] = cfg.extra_headers
     return kwargs
