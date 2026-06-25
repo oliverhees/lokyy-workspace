@@ -1,7 +1,7 @@
 # Todo — Fundament-first (Vorschlag, vor Plane-Freigabe)
 
 ## Phase F — App-Fundament & Shell (NEU, zuerst)
-- [ ] **F1** Auth end-to-end (Login/Registrierung/2FA/Logout-UI, eingeloggt bleiben, geschützte Routen)
+- [x] **F1** Auth end-to-end (Login/Registrierung/2FA/Logout-UI, eingeloggt bleiben, geschützte Routen) ✅
 - [ ] **F2** App-Shell + Navigation (Sidebar/Topbar/Routing-Hülle)
 - [ ] **F3** Settings-Framework (UserSettings-Persistenz + Settings-Seite: Profil/Sprache/Theme/Verbindung)
 - [ ] **F4** Modell-Verwaltung in Settings (ModelEndpoint CRUD, Keys verschlüsselt, modell-agnostisch)
@@ -17,4 +17,4 @@
 - [ ] M7 Sync/Team
 - [ ] M8 Brand/Launch
 
-**Nächster konkreter Start:** F1 — Auth-UI.
+**Nächster konkreter Start:** F2 — App-Shell + Navigation.
