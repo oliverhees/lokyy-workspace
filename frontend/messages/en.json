@@ -45,6 +45,15 @@
     "soon": "soon",
     "comingSoon": "Coming soon"
   },
+  "projects": {
+    "title": "Projects",
+    "new": "New project",
+    "namePlaceholder": "Project name …",
+    "none": "No projects yet.",
+    "rename": "Rename",
+    "delete": "Delete",
+    "confirmDelete": "Delete project \"{name}\" and its folder?"
+  },
   "settings": {
     "subtitle": "Manage your profile and preferences.",
     "profile": "Profile",

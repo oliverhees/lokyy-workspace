@@ -8,6 +8,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
+import { ProjectsNav } from "./ProjectsNav";
+
 function Svg({ children }: { children: React.ReactNode }) {
   return (
     <svg
@@ -112,6 +114,8 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      <ProjectsNav />
     </aside>
   );
 }

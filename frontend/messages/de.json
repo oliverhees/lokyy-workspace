@@ -45,6 +45,15 @@
     "soon": "bald",
     "comingSoon": "Kommt bald"
   },
+  "projects": {
+    "title": "Projekte",
+    "new": "Neues Projekt",
+    "namePlaceholder": "Projektname …",
+    "none": "Noch keine Projekte.",
+    "rename": "Umbenennen",
+    "delete": "Löschen",
+    "confirmDelete": "Projekt „{name}\" und seinen Ordner löschen?"
+  },
   "settings": {
     "subtitle": "Verwalte dein Profil und deine Einstellungen.",
     "profile": "Profil",
