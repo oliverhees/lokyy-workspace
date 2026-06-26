@@ -47,6 +47,11 @@ class Settings(BaseSettings):
     embedding_model_cloud: str = Field(default="text-embedding-3-small")
     embedding_dim: int = Field(default=384)
 
+    # Workspace filesystem (M3.0): each workspace owns a real on-disk folder at
+    # <root>/<workspace_id>/. All access is path-scoped via WorkspaceFS. In Docker
+    # this is a mounted volume (e.g. /data/workspaces); overridable per deployment.
+    workspace_storage_root: str = Field(default="./data/workspaces")
+
     # CORS — the PWA talks cross-origin to the backend (local/remote switch)
     allowed_origins: str = Field(default="http://localhost:3000,http://localhost:3008")
 
