@@ -192,6 +192,23 @@ class ChatSession(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=utcnow, nullable=False, sa_column_kwargs=_UPDATED)
 
 
+class Project(SQLModel, table=True):
+    """A project inside a workspace (M3.1): a real on-disk subfolder + (later, M3.4)
+    an assigned context. `dirname` is the stable folder name — slugged once at
+    creation, never moved on rename — so file paths never break; `name` is the free,
+    renameable display name. Owner-scoped via the workspace.
+    """
+
+    __tablename__ = "projects"
+
+    id: str = Field(default_factory=gen_id, primary_key=True)
+    workspace_id: str = Field(foreign_key="workspaces.id", index=True, ondelete="CASCADE")
+    name: str
+    dirname: str  # stable FS folder name within the workspace root
+    created_at: datetime = Field(default_factory=utcnow, nullable=False)
+    updated_at: datetime = Field(default_factory=utcnow, nullable=False, sa_column_kwargs=_UPDATED)
+
+
 class ChatMessage(SQLModel, table=True):
     __tablename__ = "chat_messages"
 
