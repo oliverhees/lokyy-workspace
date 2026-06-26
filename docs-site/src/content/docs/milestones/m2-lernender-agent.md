@@ -44,4 +44,24 @@ Baut auf der Fundament-Phase (F) auf. Vertikale Slices, jeder für sich erlebbar
 
 > **🚩 M2 abgeschlossen:** Der Agent hat Persona, kennt den Nutzer, erinnert sich (pgvector),
 > lernt aus Gesprächen und richtet sich an den Zielen aus — alles lokal/DSGVO-konform.
-> Vor dem Meilenstein-Haken steht noch ein **QA-Gate** für M2 (analog Phase F).
+
+## QA-Gate M2 — ✅ Conditional Pass
+
+Dedizierter QA-Pass (analog Phase F), durchgeführt von drei Review-Agenten: **Security-Audit**,
+**Coverage/Test-Lauf**, **Code-Review** (jeweils mit direktem Quell-Read, da der M2-Code nach dem
+letzten Wissensgraph-Build entstand).
+
+- **Tests real verifiziert:** **107 passed / 0 failed** gegen echtes Postgres + pgvector
+  (`localhost:5435`) — der Memory-Stand „105 grün" war kein False-Positive; +2 durch die neuen
+  Cross-Tenant-Regressionstests.
+- **Scoping:** faktisch sauber — jeder Memory-/Context-Pfad filtert strikt auf den eigenen
+  Workspace, kein realer Cross-User-Leak. Der QA-Pass deckte auf, dass die **Cross-Tenant-Isolation
+  des AgentContext** bisher nur durch Code-Read, nicht durch einen Test abgesichert war (mit
+  „Pass = fertig" hätte ein künftiger Refactor sie lautlos öffnen können). Geschlossen durch
+  Regressionstests auf **Service- und Route-Ebene** (Commit `f3ada4c`).
+- **Offene Fix-Items (Backlog, nicht-blockierend):** Embedding-Dim-Guard (cloud 1536 vs lokal 384),
+  Memory-Retrieval-Schwellwert (gegen Rauschen im Prompt), Fakten-Extraktion aus dem Stream-Abschluss
+  lösen (UX), SSRF-Default härten. **Prompt-Injection-Härtung** der Memory-Pipeline ist heute
+  self-injection (workspace-scoped) und für geteilte Workspaces (M7) vorgemerkt.
+
+> **🚩 Meilenstein-Haken:** M2 hat das QA-Gate **bestanden**. Details &amp; Findings in Plane `LWS-65`.
