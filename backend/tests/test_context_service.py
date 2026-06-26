@@ -12,8 +12,8 @@ def _db():
     return Session(eng)
 
 
-def _workspace(db):
-    u = auth.signup(db, organization_name="Acme", email="a@x.de", password="pw123456", display_name="A")
+def _workspace(db, email="a@x.de"):
+    u = auth.signup(db, organization_name="Acme", email=email, password="pw123456", display_name="A")
     return session_service.get_or_create_default_workspace(db, user=db.get(User, u.id)).id
 
 
@@ -56,3 +56,29 @@ def test_telos_in_system_prompt():
     # empty telos → no telos section
     ctx2 = context_service.update_context(db, workspace_id=wid, telos="")
     assert "Telos" not in context_service.assemble_system_prompt(ctx2)
+
+
+def test_context_is_workspace_scoped():
+    """Cross-Tenant (M2 QA, LWS-65): workspace B's context never carries workspace A's data.
+
+    assemble_system_prompt reads only the ctx it is handed, so the tenant guarantee
+    lives in get_or_create_context(workspace_id=...). This pins it against a future
+    refactor that might drop the workspace filter and silently leak across tenants.
+    """
+    db = _db()
+    w1 = _workspace(db, "one@x.de")
+    w2 = _workspace(db, "two@x.de")
+    context_service.update_context(
+        db, workspace_id=w1, soul="Sei knapp.",
+        user_profile="Heißt Alice, Geheimprojekt Zeta.",
+        telos="Mission: Markt erobern.",
+    )
+    # Workspace B is fresh and isolated.
+    ctx2 = context_service.get_or_create_context(db, workspace_id=w2)
+    assert ctx2.soul == context_service.DEFAULT_SOUL
+    assert ctx2.user_profile == ""
+    assert (ctx2.telos or "") == ""
+    # And none of workspace A's secrets surface in workspace B's assembled prompt.
+    prompt2 = context_service.assemble_system_prompt(ctx2)
+    for secret in ("Geheimprojekt Zeta", "Alice", "Markt erobern"):
+        assert secret not in prompt2
